@@ -1,0 +1,66 @@
+/* CommandSender.css */
+
+.command-sender-container {
+    max-width: 500px;
+    margin: 0 auto;
+    background-color: #f5f5f5;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+  
+  .title {
+    font-family: 'Arial', sans-serif;
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 20px;
+  }
+  
+  .input-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+  }
+  
+  .command-select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+  }
+  
+  .send-button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .send-button:hover {
+    background-color: #45a049;
+  }
+  
+  .response {
+    font-family: 'Courier New', Courier, monospace;
+    color: #333;
+    background-color: #fff;
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 20px;
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  @media (max-width: 600px) {
+    .command-sender-container {
+      width: 90%;
+      padding: 15px;
+    }
+  }
+  
