@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import AWS from 'aws-sdk'; 
 import 'bootstrap/dist/css/bootstrap.min.css'; 
 import Header from '../../Header'; 
+import { useNavigate } from 'react-router-dom';
 import { CognitoUserPool, AuthenticationDetails, CognitoUser } from 'amazon-cognito-identity-js';
+import { FaFileVideo, FaFileAlt } from 'react-icons/fa'; 
 
 const poolData = {
     UserPoolId: 'eu-west-2_9hCbrQq4P',
@@ -17,6 +19,7 @@ const BucketAccess = () => {
   const [password, setPassword] = useState('');
   const [apiResult, setApiResult] = useState(null);
   const [s3Data, setS3Data] = useState(null);
+  const navigate = useNavigate();
 
   const identityPoolId = 'eu-west-2:eb767e70-8369-4099-9596-58f5d78cd65c';
 const region = 'eu-west-2';
@@ -115,23 +118,54 @@ const dashcamName = 'dashcam0058/';
     });
   };
 
+  const handleVideoClick = (videoKey) => {
+    // Construct the S3 video URL
+    console.log('videoKey',videoKey)
+    const videoUrl = `https://customer-dashcam-videos.s3.eu-west-2.amazonaws.com/${videoKey}`;
+    navigate('/VideoPlayer', { state: { videoUrl } });
+};
+
+
   return (
     <div>
             <Header />
-            <h2>S3 Bucket Contents</h2>
-            <h3>API Result</h3>
-            <pre>{apiResult ? JSON.stringify(apiResult, null, 2) : 'No result yet'}</pre>
-            {s3Data && (
-                <div>
-                    <h4>S3 Data</h4>
-                    <ul>
+            <div className="container mt-4">
+                <h2 className="text-center">S3 Bucket Contents</h2>
+                {s3Data && (
+                    <div className="row">
                         {s3Data.map(item => (
-                            <li key={item.Key}>{item.Key}</li>
+                            <div key={item.Key} className="col-md-6 mb-4">
+                                <div className="card shadow-sm h-100">
+                                    <div className="card-body d-flex align-items-center">
+                                        {/* Check if the file is an mp4, if so, make it a clickable button */}
+                                        {item.Key.endsWith('.mp4') ? (
+                                            <FaFileVideo className="me-3 text-primary" size={24} />
+                                        ) : (
+                                            <FaFileAlt className="me-3 text-secondary" size={24} />
+                                        )}
+                                        <div className="flex-grow-1">
+                                            {item.Key.endsWith('.mp4') ? (
+                                                <button
+                                                    onClick={() => handleVideoClick(item.Key)}
+                                                    className="btn btn-link p-0 text-dark"
+                                                    style={{ textDecoration: 'none',background:'none',whiteSpace: 'nowrap',
+                                                      textOverflow: 'ellipsis', cursor: 'pointer' }}
+                                                >
+                                                    {item.Key}
+                                                </button>
+                                            ) : (
+                                                <span>{item.Key}</span>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         ))}
-                    </ul>
-                </div>
-            )}
+                    </div>
+                )}
+            </div>
         </div>
+
   );
 };
 

@@ -159,23 +159,24 @@ const StreamVideo = () => {
     };
 
     return (
-        <div>
+            <div>
             <Header />
-            <div className="container">
-                <h1>AWS Cognito Authenticated Access and Kinesis Video Streams</h1>
-                <div className="form-group">
-                    <label htmlFor="username">Username:</label>
-                    <input type="text" id="username" name="username" className="form-control" value={username} onChange={e => setUsername(e.target.value)} />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="password">Password:</label>
-                    <input type="password" id="password" name="password" className="form-control" value={password} onChange={e => setPassword(e.target.value)} />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="newPassword" id="newPasswordLabel" style={{ display: newPassword ? 'block' : 'none' }}>New Password:</label>
-                    <input type="password" id="newPassword" name="newPassword" className="form-control" style={{ display: newPassword ? 'block' : 'none' }} value={newPassword} onChange={e => setNewPassword(e.target.value)} />
-                </div>
-                <button className="btn btn-primary" onClick={authenticateUser}>Login and Get ARNs</button>
+            <div className="container">      
+            <div className='text-center mt-3'>
+                <h2 className="text-center text-black">AWS Cognito Authenticated Access</h2>
+            </div>
+            <div className="d-flex flex-column align-items-center mt-4">
+            <div className="mb-3 w-49">
+                <input type="text" id="username" name="username"placeholder='Enter UserName' className="form-control" value={username} onChange={e => setUsername(e.target.value)} />
+            </div>
+
+            <div className="mb-3 w-49">
+                <input type="password" id="password" name="password"placeholder='Enter Password' className="form-control" value={password} onChange={e => setPassword(e.target.value)} />
+            </div>
+
+            <button className="btn btn-primary" onClick={authenticateUser}>Login</button>
+            </div>
+
                 <pre id="output" className="mt-4 fw-bold">{output}</pre>
                 <video ref={remoteVideoRef} autoPlay playsInline controls style={{ width: '100%', height: '500px' }} />
             </div>

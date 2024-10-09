@@ -9,6 +9,7 @@ import Dashboard from '../Components/DashBoardPage/Dashboard';
 import SendCommand from '../Components/CommandPage/SendCommand';
 import Login from '../Components/LoginPage';
 import { useAuth } from '../Hooks/AuthContext';
+import VideoPlayer from '../Components/S3Bucket/VideoPlayer';
 
 
 const AppRoutes = () => {
@@ -27,7 +28,8 @@ const AppRoutes = () => {
             <Route path="/BucketAccess" element={<BucketAccess/>} />
             <Route path="/Dashboard" element={<Dashboard/>} />
             <Route path="/SendCommand" element={<SendCommand/>} />
-
+            <Route path="/VideoPlayer" element={<VideoPlayer/>} />
+            
             <Route path="*" element={<Navigate to="/" />} />
         </Routes>
     );

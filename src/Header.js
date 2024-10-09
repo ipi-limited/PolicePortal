@@ -30,7 +30,7 @@ const Header = ({onHomeClick}) => {
           <Nav.Link onClick={() => navigate('/SendCommand')}>Send Command</Nav.Link>
         </Nav.Item>
         <Nav.Item>
-          <Nav.Link onClick={() => navigate('/BucketAccess')}>Another Tab</Nav.Link> 
+          <Nav.Link onClick={() => navigate('/BucketAccess')}>Bucket Access</Nav.Link> 
         </Nav.Item>
       </Nav>
       )}
