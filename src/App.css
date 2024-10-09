@@ -1,6 +1,6 @@
 .App-header {
   background-color: black;
-  height: 120px;
+  height: 140px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -27,7 +27,7 @@
 h1 {
   font-size: 4rem;
   color: white;
-  padding-left: 600px;
+  padding-left: 10px;
 }
 .container {
   margin-top: 30px;

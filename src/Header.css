@@ -1,0 +1,25 @@
+
+.App-header {
+    background-color: #343a40; 
+    padding: 20px 0; 
+  }
+  
+  .header-content {
+    margin-bottom: 10px; 
+  }
+  
+  .header-tabs {
+    display: flex; 
+    justify-content: center; 
+    padding: 0; 
+  }
+  
+  .header-tabs .nav-link {
+    font-weight: bold; 
+    color: white; 
+  }
+  
+  .header-tabs .nav-link:hover {
+    color: #f0f0f0; 
+  }
+  
