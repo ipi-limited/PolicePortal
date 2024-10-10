@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import AWS from 'aws-sdk';
 import { SignalingClient, Role } from 'amazon-kinesis-video-streams-webrtc';
 import { AuthenticationDetails, CognitoUser, CognitoUserPool } from 'amazon-cognito-identity-js';
+import Header from '../../Header';
 
 const StreamVideo = () => {
   const [username, setUsername] = useState('');
@@ -194,43 +195,22 @@ console.log('entered into set up viewer');
 
   return (
     <div>
-      <h1>AWS Cognito Authenticated Access and Kinesis Video Streams</h1>
+        <Header />
+        <div className="container mt-4">
+        <h2 className="text-center">Live Streaming</h2>
 
-      <label htmlFor="username">Username:</label>
-      <input
-        type="text"
-        id="username"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-      />
-      <br /><br />
+        <div className="d-flex flex-column align-items-center mt-4">
+            <div className="mb-3 w-49">
+                <input type="text" id="username" name="username"placeholder='Enter UserName' className="form-control" value={username} onChange={e => setUsername(e.target.value)} />
+            </div>
 
-      <label htmlFor="password">Password:</label>
-      <input
-        type="password"
-        id="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
-      <br /><br />
+            <div className="mb-3 w-49">
+                <input type="password" id="password" name="password"placeholder='Enter Password' className="form-control" value={password} onChange={e => setPassword(e.target.value)} />
+            </div>
 
-      {showNewPassword && (
-        <>
-          <label htmlFor="newPassword">New Password:</label>
-          <input
-            type="password"
-            id="newPassword"
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-          />
-          <br /><br />
-        </>
-      )}
-
-      <button onClick={authenticateUser}>Login and Get ARNs</button>
-
-      <pre>{output}</pre>
-
+      <button className="btn btn-primary mb-3"  onClick={authenticateUser}>Login</button>
+    </div>
+      {/* <pre>{output}</pre> */}
       <video
         ref={videoRef}
         autoPlay
@@ -238,6 +218,7 @@ console.log('entered into set up viewer');
         controls
         style={{ width: '100%', height: '500px' }}
       ></video>
+    </div>
     </div>
   );
 };
