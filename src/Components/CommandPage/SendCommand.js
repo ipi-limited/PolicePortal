@@ -4,7 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import Header from '../../Header';
 
 const SendCommand = () => {
-  const [command, setCommand] = useState('start');
+  const [command, setCommand] = useState('');
   const [response, setResponse] = useState('');
   const commandSent = localStorage.getItem('commandSent')
 
@@ -17,7 +17,7 @@ const SendCommand = () => {
   }, [commandSent]); 
 
   console.log('commad',commandSent)
-  const sendCommand = async () => {
+  const sendCommand = async (command) => {
     const apiUrl = 'https://v2hvllmzbk.execute-api.eu-west-2.amazonaws.com/dev/send-command';
 
     const payload = {
@@ -54,19 +54,13 @@ const SendCommand = () => {
     <div>
         <Header />
     <div className="container">
-      {/* <div className="mb-3 text-input-container">
-        <input
-          type="text"
-          className="form-control text-input"
-          placeholder="Enter Command"
-          value={command}
-          onChange={(e) => setCommand(e.target.value)}
-        />
-      </div> */}
       {!commandSent && (
       <div className='button-container'>
-        <button className="btn btn-primary mt-3" onClick={sendCommand}>
-          Send Command
+        <button className="btn btn-primary mt-3" onClick={()=> sendCommand('start')}>
+          Start Live
+        </button>
+        <button className="btn btn-primary mt-3" onClick={()=>  sendCommand('stop')}>
+          Stop Live
         </button>
       </div>
       )}

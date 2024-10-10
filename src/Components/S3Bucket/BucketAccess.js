@@ -16,27 +16,20 @@ const poolData = {
 
 const BucketAccess = () => {
     const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [apiResult, setApiResult] = useState(null);
-  const [s3Data, setS3Data] = useState(null);
-  const navigate = useNavigate();
-
-  const identityPoolId = 'eu-west-2:eb767e70-8369-4099-9596-58f5d78cd65c';
-const region = 'eu-west-2';
-// const bucketName = 'Customer-dashcam-videos';
-const folderName = 'dashcam0058/';
-const userPoolId = 'eu-west-2_9hCbrQq4P';
-const dashcamName = 'dashcam0058/';
+    const [password, setPassword] = useState('');
+    const [apiResult, setApiResult] = useState(null);
+    const [s3Data, setS3Data] = useState(null);
+    const navigate = useNavigate();
+    const dashcamName = 'dashcam0058/';
 
   useEffect(() => {
-    // Check if saved credentials exist
     const savedUsername = localStorage.getItem('username');
     const savedPassword = localStorage.getItem('password');
 
     if (savedUsername && savedPassword) {
       setUsername(savedUsername);
       setPassword(savedPassword);
-      signIn(savedUsername, savedPassword); // Automatically sign in
+      signIn(savedUsername, savedPassword);
     }
   }, []);
 

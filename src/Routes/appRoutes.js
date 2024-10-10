@@ -10,7 +10,7 @@ import SendCommand from '../Components/CommandPage/SendCommand';
 import Login from '../Components/LoginPage';
 import { useAuth } from '../Hooks/AuthContext';
 import VideoPlayer from '../Components/S3Bucket/VideoPlayer';
-
+import DbTable from '../Components/Database/DbTable';
 
 const AppRoutes = () => {
     const { isAuthenticated, loading } = useAuth(); 
@@ -29,7 +29,8 @@ const AppRoutes = () => {
             <Route path="/Dashboard" element={<Dashboard/>} />
             <Route path="/SendCommand" element={<SendCommand/>} />
             <Route path="/VideoPlayer" element={<VideoPlayer/>} />
-            
+            <Route path="/DbTable" element={<DbTable/>} />
+
             <Route path="*" element={<Navigate to="/" />} />
         </Routes>
     );

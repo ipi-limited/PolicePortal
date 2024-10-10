@@ -32,6 +32,9 @@ const Header = ({onHomeClick}) => {
         <Nav.Item>
           <Nav.Link onClick={() => navigate('/BucketAccess')}>Bucket Access</Nav.Link> 
         </Nav.Item>
+        <Nav.Item>
+          <Nav.Link onClick={() => navigate('/DbTable')}>DataBase</Nav.Link> 
+        </Nav.Item>
       </Nav>
       )}
       </div>    

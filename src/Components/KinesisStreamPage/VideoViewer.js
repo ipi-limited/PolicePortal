@@ -67,7 +67,7 @@ const VideoViewer = () => {
                     }
                 };
 
-                await signalingClient.open();
+                signalingClient.open();
             } catch (error) {
                 console.error('Error initializing SignalingClient:', error.message);
             }

@@ -1,187 +1,245 @@
 import React, { useState, useEffect, useRef } from 'react';
-import AWS from 'aws-sdk'; 
-import { AuthenticationDetails, CognitoUser, CognitoUserPool } from 'amazon-cognito-identity-js';
+import AWS from 'aws-sdk';
 import { SignalingClient, Role } from 'amazon-kinesis-video-streams-webrtc';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import Header from '../../Header';
-import { useAuth } from '../../Hooks/AuthContext';
+import { AuthenticationDetails, CognitoUser, CognitoUserPool } from 'amazon-cognito-identity-js';
 
 const StreamVideo = () => {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [newPassword, setNewPassword] = useState('');
-    const [output, setOutput] = useState('');
-    const [channelARN, setChannelARN] = useState('');
-    const remoteVideoRef = useRef(null);  // Reference for the video element
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [output, setOutput] = useState('');
+  const [remoteVideoStream, setRemoteVideoStream] = useState(null);
+  const [channelARN, setChannelARN] = useState('');
+  const [credentials, setCredentials] = useState(null);
+  const videoRef = useRef();
 
-    const userPoolId = 'eu-west-2_9hCbrQq4P'; 
-    const clientId = '47ko5gjvt7h5l64c6ej3a22shj'; 
-    const identityPoolId = 'eu-west-2:eb767e70-8369-4099-9596-58f5d78cd65c';
-    const region = 'eu-west-2'; 
+  const userPoolId = 'eu-west-2_9hCbrQq4P'; 
+  const clientId = '47ko5gjvt7h5l64c6ej3a22shj'; 
+  const identityPoolId = 'eu-west-2:eb767e70-8369-4099-9596-58f5d78cd65c'; 
+  const region = 'eu-west-2'; 
+  const wssEndpoint = 'wss://v-fe304e5e.kinesisvideo.eu-west-2.amazonaws.com';
+
+  useEffect(() => {
+    console.log('Entered into use effect')
+    if (credentials && channelARN && wssEndpoint) {
+      setupViewer(channelARN, credentials, wssEndpoint);
+    }
+  }, [credentials, channelARN,wssEndpoint]);
+
+  const authenticateUser = () => {
+    if (!username || !password) {
+      alert('Please enter both username and password.');
+      return;
+    }
+
+    const authenticationData = {
+      Username: username,
+      Password: password,
+    };
+
+    const authenticationDetails = new AuthenticationDetails(authenticationData);
 
     const poolData = {
-        UserPoolId: userPoolId,
-        ClientId: clientId
+      UserPoolId: userPoolId,
+      ClientId: clientId,
     };
+
     const userPool = new CognitoUserPool(poolData);
 
-    const authenticateUser = () => {
-        if (!username || !password) {
-            alert("Please enter both username and password.");
-            return;
-        }
-
-        const authenticationData = { Username: username, Password: password };
-        const authenticationDetails = new AuthenticationDetails(authenticationData);
-        const userData = { Username: username, Pool: userPool };
-        const cognitoUser = new CognitoUser(userData);
-
-        cognitoUser.authenticateUser(authenticationDetails, {
-            onSuccess: async (result) => {
-                console.log('Authentication successful');
-                const idToken = result.getIdToken().getJwtToken();
-
-                // Configure AWS SDK
-                AWS.config.region = region;
-                AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-                    IdentityPoolId: identityPoolId,
-                    Logins: {
-                        [`cognito-idp.${region}.amazonaws.com/${userPoolId}`]: idToken
-                    }
-                });
-
-                // Get temporary credentials
-                AWS.config.credentials.get(async (err) => {
-                    if (err) {
-                        console.error('Error retrieving credentials:', err);
-                        setOutput('Error retrieving credentials: ' + err.message);
-                        return;
-                    }
-
-                    console.log('Temporary credentials obtained:', AWS.config.credentials);
-                    const sts = new AWS.STS({ credentials: AWS.config.credentials });
-                    const identity = await sts.getCallerIdentity().promise();
-                    const userARN = identity.Arn;
-                    setOutput(`IAM Role/User ARN: ${userARN}\n`);
-
-                    // Initialize Kinesis Video client
-                    const kinesisVideoClient = new AWS.KinesisVideo({ region, credentials: AWS.config.credentials });
-                    const describeSignalingChannelResponse = await kinesisVideoClient.describeSignalingChannel({
-                        ChannelName: 'dashcam0058'  // Replace with your channel name
-                    }).promise();
-
-                    const channelARNValue = describeSignalingChannelResponse.ChannelInfo.ChannelARN;
-                    setChannelARN(channelARNValue);
-                    setOutput(prev => prev + `Signaling Channel ARN: ${channelARNValue}\n`);
-
-                    // Get signaling channel endpoints
-                    const getSignalingChannelEndpointResponse = await kinesisVideoClient.getSignalingChannelEndpoint({
-                        ChannelARN: channelARNValue,
-                        SingleMasterChannelEndpointConfiguration: {
-                            Protocols: ['WSS', 'HTTPS'],
-                            Role: 'VIEWER'
-                        }
-                    }).promise();
-
-                    const endpointsByProtocol = getSignalingChannelEndpointResponse.ResourceEndpointList.reduce((endpoints, endpoint) => {
-                        endpoints[endpoint.Protocol] = endpoint.ResourceEndpoint;
-                        return endpoints;
-                    }, {});
-
-                    // Set up the WebRTC viewer
-                    setupViewer(channelARNValue, endpointsByProtocol);
-                });
-            },
-            onFailure: (err) => {
-                console.error('Authentication failed:', err);
-                setOutput('Authentication failed: ' + err.message);
-            },
-            newPasswordRequired: (userAttributes, requiredAttributes) => {
-                alert("Enter a new password.");
-                setNewPassword(''); // Reset new password field
-            }
-        });
+    const userData = {
+      Username: username,
+      Pool: userPool,
     };
 
-    const setupViewer = async (channelARNValue, endpointsByProtocol) => {
-        const wssEndpoint = endpointsByProtocol['WSS'];
-        if (!wssEndpoint) {
-            console.error('WSS endpoint is undefined.');
-            return;
+    const cognitoUser = new CognitoUser(userData);
+    
+    // Authenticate the user
+    cognitoUser.authenticateUser(authenticationDetails, {
+      onSuccess: (result) => {
+        console.log('Authentication successful');
+
+        // Get ID token
+        const idToken = result.getIdToken().getJwtToken();
+
+        AWS.config.region = region; 
+        AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+          IdentityPoolId: identityPoolId,
+          Logins: {
+            [`cognito-idp.${region}.amazonaws.com/${userPoolId}`]: idToken,
+          },
+        });
+
+        AWS.config.credentials.get(async function (err) {
+          if (err) {
+            console.error('Error retrieving credentials:', err);
+            setOutput(`Error retrieving credentials: ${err.message}`);
+          } else {
+            console.log('Temporary credentials obtained:', AWS.config.credentials);
+
+            setCredentials(AWS.config.credentials);
+
+            try {
+              const sts = new AWS.STS({ credentials: AWS.config.credentials });
+              const identity = await sts.getCallerIdentity().promise();
+              const userARN = identity.Arn;
+
+              console.log('IAM Role/User ARN:', userARN);
+              setOutput(`IAM Role/User ARN: ${userARN}\n`);
+
+              const kinesisVideoClient = new AWS.KinesisVideo({
+                region: AWS.config.region,
+                credentials: AWS.config.credentials,
+              });
+
+              const describeSignalingChannelResponse = await kinesisVideoClient
+                .describeSignalingChannel({
+                  ChannelName: 'dashcam0058',
+                })
+                .promise();
+
+              const channelARNValue = describeSignalingChannelResponse.ChannelInfo.ChannelARN;
+              console.log('Signaling Channel ARN:', channelARNValue);
+              setOutput((prevOutput) => prevOutput + `Signaling Channel ARN: ${channelARNValue}`);
+              setChannelARN(channelARNValue);
+            } catch (error) {
+              console.error('Error:', error);
+              setOutput(`Error: ${error.message}`);
+            }
+          }
+        });
+      },
+
+      onFailure: (err) => {
+        console.error('Authentication failed:', err);
+        setOutput(`Authentication failed: ${err.message}`);
+      },
+
+      newPasswordRequired: () => {
+        console.log('New password required');
+        setShowNewPassword(true);
+        alert('Enter a new password.');
+      },
+    });
+  };
+
+  const setupViewer = (channelARN, credentials, wssEndpoint) => {
+console.log('entered into set up viewer');
+
+    const clientId = '7Q5W4FRICH'; 
+
+    if (!wssEndpoint || !channelARN || !credentials) {
+      console.error('Missing required WebRTC setup parameters.');
+      return;
+    }
+
+    try {
+      const signalingClient = new SignalingClient({
+        channelARN,
+        channelEndpoint: wssEndpoint,
+        region: AWS.config.region,
+        role: Role.VIEWER,
+        clientId,
+        credentials,
+      });
+
+      const peerConnection = new RTCPeerConnection({
+        iceServers: [{ urls: ['stun:stun.kinesisvideo.eu-west-2.amazonaws.com:443'] }],
+      });
+
+      peerConnection.ontrack = (event) => {
+        const mediaStream = event.streams[0];
+            console.log('Media Stream:', mediaStream);
+            console.log('Tracks:', mediaStream.getTracks());
+        if (videoRef.current) {
+            videoRef.current.srcObject = mediaStream;
+        } else {
+            console.error('Video ref is null. The video element is not rendered yet.');
         }
 
-        const signalingClient = new SignalingClient({
-            channelARN: channelARNValue,
-            channelEndpoint: wssEndpoint,
-            role: Role.VIEWER,
-            region: AWS.config.region,
-            clientId: '7Q5W4FRICH', // Use your actual clientId
-            credentials: AWS.config.credentials,
+      };
+
+      signalingClient.on('open', async () => {
+        console.log('Signaling client connected');
+        const offer = await peerConnection.createOffer({
+          offerToReceiveAudio: true,
+          offerToReceiveVideo: true,
         });
+        console.log('Sending SDP offer:', offer);
+        await peerConnection.setLocalDescription(offer);
+        signalingClient.sendSdpOffer(peerConnection.localDescription);
+      });
 
-        const peerConnection = new RTCPeerConnection({
-            iceServers: [{ urls: ['stun:stun.kinesisvideo.eu-west-2.amazonaws.com:443'] }],
-        });
+      signalingClient.on('sdpAnswer', async (answer) => {
+        console.log('Received SDP answer');
+        await peerConnection.setRemoteDescription(answer);
+      });
 
-        peerConnection.ontrack = (event) => {
-            const mediaStream = event.streams[0];
-            if (remoteVideoRef.current) {
-                remoteVideoRef.current.srcObject = mediaStream; // Attach stream to video element
-            }
-        };
+      signalingClient.on('iceCandidate', (candidate) => {
+        peerConnection.addIceCandidate(candidate);
+      });
 
-        signalingClient.on('open', async () => {
-            const offer = await peerConnection.createOffer({
-                offerToReceiveAudio: true,
-                offerToReceiveVideo: true,
-            });
-            await peerConnection.setLocalDescription(offer);
-            signalingClient.sendSdpOffer(peerConnection.localDescription);
-        });
+      peerConnection.onicecandidate = ({ candidate }) => {
+        if (candidate) {
+            console.log('Sending ICE candidate:', candidate);
+          signalingClient.sendIceCandidate(candidate);
+        }
+      };
 
-        signalingClient.on('sdpAnswer', async (answer) => {
-            await peerConnection.setRemoteDescription(answer);
-        });
+      signalingClient.open();
+    } catch (error) {
+      console.error('Error initializing SignalingClient:', error.message);
+    }
+  };
 
-        signalingClient.on('iceCandidate', (candidate) => {
-            peerConnection.addIceCandidate(candidate).catch(error => {
-                console.error('Error adding ICE candidate:', error);
-            });
-        });
+  return (
+    <div>
+      <h1>AWS Cognito Authenticated Access and Kinesis Video Streams</h1>
 
-        peerConnection.onicecandidate = ({ candidate }) => {
-            if (candidate) {
-                signalingClient.sendIceCandidate(candidate);
-            }
-        };
+      <label htmlFor="username">Username:</label>
+      <input
+        type="text"
+        id="username"
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
+      />
+      <br /><br />
 
-        signalingClient.open();
-    };
+      <label htmlFor="password">Password:</label>
+      <input
+        type="password"
+        id="password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+      />
+      <br /><br />
 
-    return (
-            <div>
-            <Header />
-            <div className="container">      
-            <div className='text-center mt-3'>
-                <h2 className="text-center text-black">AWS Cognito Authenticated Access</h2>
-            </div>
-            <div className="d-flex flex-column align-items-center mt-4">
-            <div className="mb-3 w-49">
-                <input type="text" id="username" name="username"placeholder='Enter UserName' className="form-control" value={username} onChange={e => setUsername(e.target.value)} />
-            </div>
+      {showNewPassword && (
+        <>
+          <label htmlFor="newPassword">New Password:</label>
+          <input
+            type="password"
+            id="newPassword"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+          />
+          <br /><br />
+        </>
+      )}
 
-            <div className="mb-3 w-49">
-                <input type="password" id="password" name="password"placeholder='Enter Password' className="form-control" value={password} onChange={e => setPassword(e.target.value)} />
-            </div>
+      <button onClick={authenticateUser}>Login and Get ARNs</button>
 
-            <button className="btn btn-primary" onClick={authenticateUser}>Login</button>
-            </div>
+      <pre>{output}</pre>
 
-                <pre id="output" className="mt-4 fw-bold">{output}</pre>
-                <video ref={remoteVideoRef} autoPlay playsInline controls style={{ width: '100%', height: '500px' }} />
-            </div>
-        </div>
-    );
+      <video
+        ref={videoRef}
+        autoPlay
+        playsInline
+        controls
+        style={{ width: '100%', height: '500px' }}
+      ></video>
+    </div>
+  );
 };
 
 export default StreamVideo;
