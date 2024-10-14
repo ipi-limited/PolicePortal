@@ -13,13 +13,25 @@ const StreamVideo = () => {
   const [remoteVideoStream, setRemoteVideoStream] = useState(null);
   const [channelARN, setChannelARN] = useState('');
   const [credentials, setCredentials] = useState(null);
+  const [response, setResponse] = useState('');
   const videoRef = useRef();
+  let peerConnection;
+  let signalingClient;
+
 
   const userPoolId = 'eu-west-2_9hCbrQq4P'; 
   const clientId = '47ko5gjvt7h5l64c6ej3a22shj'; 
   const identityPoolId = 'eu-west-2:eb767e70-8369-4099-9596-58f5d78cd65c'; 
   const region = 'eu-west-2'; 
   const wssEndpoint = 'wss://v-fe304e5e.kinesisvideo.eu-west-2.amazonaws.com';
+
+  useEffect(()=>{
+    const user = localStorage.getItem('username');
+    const pass = localStorage.getItem('password');
+    setUsername(user)
+    setPassword(pass)
+    console.log('User',user,pass)
+  })
 
   useEffect(() => {
     console.log('Entered into use effect')
@@ -28,7 +40,38 @@ const StreamVideo = () => {
     }
   }, [credentials, channelARN,wssEndpoint]);
 
+   // Send command function
+   const sendCommand = async (command) => {
+    const apiUrl = 'https://v2hvllmzbk.execute-api.eu-west-2.amazonaws.com/dev/send-command';
+
+    const payload = {
+      command: command,
+    };
+
+    try {
+      const res = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        setResponse(`Command '${command}' sent successfully`);
+      } else {
+        setResponse(`Error: ${data}`);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      setResponse('Failed to send command');
+    }
+  };
+
   const authenticateUser = () => {
+    setUsername(localStorage.getItem('username'))
+    console.log('UserName',username)
     if (!username || !password) {
       alert('Please enter both username and password.');
       return;
@@ -135,7 +178,7 @@ console.log('entered into set up viewer');
     }
 
     try {
-      const signalingClient = new SignalingClient({
+        signalingClient = new SignalingClient({
         channelARN,
         channelEndpoint: wssEndpoint,
         region: AWS.config.region,
@@ -144,7 +187,7 @@ console.log('entered into set up viewer');
         credentials,
       });
 
-      const peerConnection = new RTCPeerConnection({
+        peerConnection = new RTCPeerConnection({
         iceServers: [{ urls: ['stun:stun.kinesisvideo.eu-west-2.amazonaws.com:443'] }],
       });
 
@@ -193,23 +236,60 @@ console.log('entered into set up viewer');
     }
   };
 
+  const stopViewer = () => {
+    if (peerConnection) {
+      // Close the media tracks
+      peerConnection.getSenders().forEach(sender => {
+        if (sender.track) {
+          sender.track.stop();
+        }
+      });
+  
+      // Close the peer connection
+      peerConnection.close();
+      console.log('PeerConnection closed');
+    }
+  
+    // Close the signaling client
+    if (signalingClient) {
+      signalingClient.close();
+      console.log('Signaling client closed');
+    }
+  
+    // Clear the video element
+    if (videoRef.current) {
+      videoRef.current.srcObject = null;
+    }
+  };
+  
+
   return (
     <div>
         <Header />
         <div className="container mt-4">
         <h2 className="text-center">Live Streaming</h2>
 
-        <div className="d-flex flex-column align-items-center mt-4">
-            <div className="mb-3 w-49">
-                <input type="text" id="username" name="username"placeholder='Enter UserName' className="form-control" value={username} onChange={e => setUsername(e.target.value)} />
-            </div>
+        <div className="d-flex flex-row align-items-center justify-content-center mt-4">
+          <button
+            className="btn btn-primary mb-3"
+            onClick={() => {
+              authenticateUser();
+              sendCommand('start'); 
+            }}
+          >
+            Start
+          </button>
+          <button
+            className="btn btn-primary mb-3 ms-3"
+            onClick={() => {
+              sendCommand('stop');
+              stopViewer(); 
+            }}
+          >
+            Stop
+          </button>
+        </div>
 
-            <div className="mb-3 w-49">
-                <input type="password" id="password" name="password"placeholder='Enter Password' className="form-control" value={password} onChange={e => setPassword(e.target.value)} />
-            </div>
-
-      <button className="btn btn-primary mb-3"  onClick={authenticateUser}>Login</button>
-    </div>
       {/* <pre>{output}</pre> */}
       <video
         ref={videoRef}

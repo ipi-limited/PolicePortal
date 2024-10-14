@@ -1,267 +1,310 @@
-import React, { useEffect, useState } from 'react';
-// import mqtt from 'mqtt'; // Import MQTT library
-import Header from '../../Header';
-import { Button } from 'react-bootstrap';
-import AWS from 'aws-sdk';
-import { CognitoUserPool, AuthenticationDetails, CognitoUser } from 'amazon-cognito-identity-js';
+    import React, { useState, useEffect, useCallback } from 'react';
+    import { Button } from 'react-bootstrap';
+    import Header from '../../Header';
+    import AWS from 'aws-sdk';
+    import { CognitoUserPool, AuthenticationDetails, CognitoUser } from 'amazon-cognito-identity-js';
 
-const poolData = {
-    UserPoolId: 'eu-west-2_9hCbrQq4P',
-    ClientId: '47ko5gjvt7h5l64c6ej3a22shj'
-};
+    const poolData = {
+        UserPoolId: 'eu-west-2_9hCbrQq4P',
+        ClientId: '47ko5gjvt7h5l64c6ej3a22shj',
+    };
 
-const userPool = new CognitoUserPool(poolData);
+    const userPool = new CognitoUserPool(poolData);
 
-const DbTable = () => {
-    const [error, setError] = useState(null);
-    const [loading, setLoading] = useState(true);
-    // const dashCamName = 'dashcam0058';
-    const [searchParams, setSearchParams] = useState({  
-        dashCamName: '',
-        postcode: '',
-        latitude: '',
-        longitude: '',
-    });
+    const DbTable = () => {
+        const [searchParams, setSearchParams] = useState({
+            postcode: '',
+            latitude: '',
+            longitude: '',
+            startTime: '',
+            endTime: '',
+            radius: 1,
+        });
 
-    const [apiResult, setApiResult] = useState('');
+        const [records, setRecords] = useState([]);
+        const [filteredRecords, setFilteredRecords] = useState([]); 
+        const [loading, setLoading] = useState(true);
+        const [username, setUsername] = useState('');
+        const [password, setPassword] = useState('');
+        const [boundingCoords, setBoundingCoords] = useState({
+            latitude_min: null,
+            latitude_max: null,
+            longitude_min: null,
+            longitude_max: null,
+        });
 
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
+        useEffect(() => {
+            const savedUsername = localStorage.getItem('username');
+            const savedPassword = localStorage.getItem('password');
+            if (savedUsername && savedPassword) {
+                setUsername(savedUsername);
+                setPassword(savedPassword);
+                signIn(savedUsername, savedPassword);
+            }
+        }, []);
 
-    useEffect(() => {
-        const savedUsername = localStorage.getItem('username');
-        const savedPassword = localStorage.getItem('password');
-        if (savedUsername && savedPassword) {
-            setUsername(savedUsername);
-            setPassword(savedPassword);
-            signIn(savedUsername, savedPassword); 
-        }
-    }, []);
+        const signIn = async (user, pass) => {
+            const authenticationData = {
+                Username: user,
+                Password: pass || password,
+            };
 
-    const signIn = async (user, pass) => {
-        console.log('SignIn', user,pass)
-        const authenticationData = {
-            Username: user,
-            Password: pass || password
-        };
+            const authenticationDetails = new AuthenticationDetails(authenticationData);
+            const userData = {
+                Username: user,
+                Pool: userPool,
+            };
+            const cognitoUser = new CognitoUser(userData);
 
-        const authenticationDetails = new AuthenticationDetails(authenticationData);
-        const userData = {
-            Username: user,
-            Pool: userPool
-        };
-        const cognitoUser = new CognitoUser(userData); 
+            cognitoUser.authenticateUser(authenticationDetails, {
+                onSuccess: async (result) => {
+                    const idToken = result.getIdToken().getJwtToken();
+                    AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+                        IdentityPoolId: 'eu-west-2:eb767e70-8369-4099-9596-58f5d78cd65c',
+                        Logins: {
+                            [`cognito-idp.eu-west-2.amazonaws.com/${poolData.UserPoolId}`]: idToken,
+                        },
+                    });
 
-        localStorage.setItem('cognitoUser',cognitoUser);
-        
-        cognitoUser.authenticateUser(authenticationDetails, {
-            onSuccess: async (result) => {
-                const idToken = result.getIdToken().getJwtToken();
-                // alert('Login Successful');
-                fetchDashCams(idToken);
-    },
-    onFailure: (err) => {
-        alert(err.message || JSON.stringify(err));
-    },
-});
-};
+                    AWS.config.credentials.get((err) => {
+                        if (err) console.error('Error getting AWS credentials:', err);
+                    });
 
-const buildQueryString = (params) => {
-    let queryString = '';
-
-    // Append each parameter if it exists
-    if (params.dashCamName) queryString += `dashcam_name=${encodeURIComponent(params.dashCamName)}&`;
-    if (params.postcode) queryString += `postcode=${encodeURIComponent(params.postcode)}&`;
-    if (params.latitude && !isNaN(params.latitude)) queryString += `latitude=${encodeURIComponent(params.latitude)}&`;
-    if (params.longitude && !isNaN(params.longitude)) queryString += `longitude=${encodeURIComponent(params.longitude)}&`;
-
-    // Remove the trailing '&' if it exists
-    if (queryString.endsWith('&')) {
-        queryString = queryString.slice(0, -1);
-    }
-
-    return queryString;
-};
-
-    const fetchDashCams = async(idToken) => {
-
-        const params = {
-            dashCamName: searchParams.dashCamName,
-            postcode: searchParams.postcode,
-            latitude: searchParams.latitude,
-            longitude: searchParams.longitude,
-        };
-
-        const queryString = buildQueryString(params);
-        const apiUrl = queryString ? `https://07qk57lfa2.execute-api.eu-west-2.amazonaws.com/dev/dashcams?${queryString}` : `https://07qk57lfa2.execute-api.eu-west-2.amazonaws.com/dev/dashcams`;
-
-        console.log('Fetching API with URL:', apiUrl);
-
-        setLoading(true);
-        setError(null);
-        console.log('Fetching API with URL:', apiUrl); 
-        try {
-            const response = await fetch(apiUrl, {
-                headers: {
-                    Authorization: idToken,
-                    'Content-Type': 'application/json',
+                    fetchRecordsFromDynamoDB();
+                },
+                onFailure: (err) => {
+                    alert(err.message || JSON.stringify(err));
                 },
             });
+        };
 
-            const data = await response.json();
-            console.log('Result', data);
-            const parsedData = JSON.parse(data.body); 
-            setApiResult(parsedData);
-        } catch (error) {
-            console.error('Error fetching API:', error);
-            alert('Failed to call API');
-        }
-        finally {
-            setLoading(false);
-        }
-    };
+        useEffect(() => {
+            const fetchAllRecords = async () => {
+                const dynamoDB = new AWS.DynamoDB.DocumentClient();
+                const params = {
+                    TableName: 'demo-table',
+                };
+    
+                try {
+                    const result = await dynamoDB.scan(params).promise();
+                    console.log('Fetched Records:', result.Items);
+                    setRecords(result.Items || []);
+                    // setFilteredRecords(result.Items || []); 
+                    localStorage.setItem('allRecords', JSON.stringify(result.Items || []));
+                } catch (error) {
+                    console.error('Error fetching records from DynamoDB:', error);
+                    alert(`Error fetching records: ${error.message}`);
+                } finally {
+                    setLoading(false);
+                }
+            };
+    
+            fetchAllRecords();
+        }, []); 
 
-    console.log('API result', apiResult)
+        useEffect(() => {
+            console.log('Records:', records);
+        }, [records]);
+    
+        const calculateBoundingBox = (lat, long, radiusInMiles) => {
+            const latRadius = radiusInMiles / 69.0; // Rough conversion from miles to degrees
+            const longRadius = radiusInMiles / (69.172 * Math.abs(lat));
 
-    const handleSearchChange = (e) => {
-        const { name, value } = e.target;
-        setSearchParams((prevParams) => ({
-            ...prevParams,
-            [name]: value,
-        }));
-    };
+            return {
+                latMin: parseFloat((lat - latRadius).toFixed(6)),
+                latMax: parseFloat((lat + latRadius).toFixed(6)),
+                longMin: parseFloat((long - longRadius).toFixed(6)),
+                longMax: parseFloat((long + longRadius).toFixed(6)),
+            };        
+        };
 
-    const handleSearchAndFetch = async () => {
-        const savedUsername = localStorage.getItem('username');
-        const savedPassword = localStorage.getItem('password');
+        const fetchRecordsFromDynamoDB = useCallback(async () => {
 
-        if (savedUsername && savedPassword) {
-            try {
-                await signIn(savedUsername, savedPassword);
-            } catch (error) {
-                console.error('Authentication failed:', error);
+            
+            
+            
+        }, []);
+
+        const handleSearch = (e) => {
+            console.log('seatch pressed')
+            e.preventDefault();
+
+            const lat = parseFloat(searchParams.latitude);
+            const long = parseFloat(searchParams.longitude);
+
+            if ((searchParams.latitude && isNaN(lat)) || (searchParams.longitude && isNaN(long))) {
+                alert("Please enter valid latitude and longitude values.");
+                return;
             }
-        }
 
-    };
+            const formattedStartTime = searchParams.startTime ? formatDateToString(searchParams.startTime) : null;
+            const formattedEndTime = searchParams.endTime ? formatDateToString(searchParams.endTime) : null;
+
+            // Filter records based on search criteria
+            const filtered = records.filter((record) => {
+                let matches = true;
+        
+                // Check for postcode match (case-insensitive)
+                if (searchParams.postcode) {
+                    if (record.postcode) {
+                        matches &= record.postcode.toLowerCase().includes(searchParams.postcode.toLowerCase());
+                    } else {
+                        matches = false;
+                    }
+                }
+        
+                // Check for latitude and longitude within bounding box
+                if (searchParams.latitude && searchParams.longitude) {
+                    const { latMin, latMax, longMin, longMax } = calculateBoundingBox(
+                        parseFloat(searchParams.latitude),
+                        parseFloat(searchParams.longitude),
+                        searchParams.radius
+                    );
+                    console.log('lat',latMin,latMax,longMin,longMax)
+                    const latMinStr = latMin.toString();
+                    const latMaxStr = latMax.toString();
+                    const longMinStr = longMin.toString();
+                    const longMaxStr = longMax.toString();
+        
+                    matches &= (record.latitude.toString() >= latMinStr && record.latitude.toString() <= latMaxStr ||
+                                record.longitude.toString() >= longMinStr && record.longitude.toString() <= longMaxStr);
+                    console.log('Match result for record:',  matches);
+        
+                }
+        
+                if (formattedStartTime && formattedEndTime) {
+                    matches &= (record.video_start_time >= formattedStartTime && record.video_end_time <= formattedEndTime);
+                }
+        
+    
+    
+                return matches;
+    
+            });
+        
+            setFilteredRecords(filtered);
+            setSearchParams({
+                postcode: '',
+                latitude: '',
+                longitude: '',
+                startTime: '',
+                endTime: '',
+                radius: 1,
+            });
+        
+        };
 
 
-    // const handleSearchChange = (e) => {
-    //     const { name, value } = e.target;
-    //     setSearchParams((prevParams) => ({
-    //         ...prevParams,
-    //         [name]: value,
-    //     }));
-    // };
+        const handleInputChange = (e) => {
+            const { name, value } = e.target;
+            setSearchParams((prevParams) => ({
+                ...prevParams,
+                [name]: value,
+            }));
+        };
 
-    // const handlePlayVideo = (videoFileName, fileLocation) => {
-    //     const mqttClient = mqtt.connect('mqtt://your-broker-url'); // Replace with your MQTT broker URL
+        const formatDateToString = (date) => {
+            const d = new Date(date);
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+            const day = String(d.getDate()).padStart(2, '0');
+            const hours = String(d.getHours()).padStart(2, '0');
+            const minutes = String(d.getMinutes()).padStart(2, '0');
+        
+            return `${year}${month}${day}_${hours}${minutes}`;
+        };
+        
 
-    //     const message = {
-    //         command: 'upload',
-    //         file_name: videoFileName,
-    //         file_path: fileLocation,
-    //     };
-
-    //     mqttClient.on('connect', () => {
-    //         mqttClient.publish('your/topic', JSON.stringify(message), {}, (err) => {
-    //             if (err) {
-    //                 console.error('Failed to send MQTT message:', err);
-    //             } else {
-    //                 console.log('MQTT message sent:', message);
-    //             }
-    //             mqttClient.end();
-    //         });
-    //     });
-    // };
-
-    return (
-        <div>
+        return (
+            <div>
             <Header />
             <div className="container mt-4">
-                <h2 className="text-center">Data Base Search</h2>
-                {error && <p>Error: {error}</p>}
-                {loading && <p>Loading...</p>} {/* Show loading state */}
-
-                {/* Search Form */}
+                <h2 className="text-center">Search Dashcam Records</h2>
                 <div style={{ margin: '5px', display: 'flex', justifyContent: 'space-between' }}>
-                    <input
-                        type="text"
-                        name="dashCamName"
-                        placeholder="DashCam Name"
-                        value={searchParams.dashCamName} 
-                        onChange={handleSearchChange}
-                    />
-                    <input
-                        type="text"
-                        name="latitude"
-                        placeholder="Latitude"
-                        value={searchParams.latitude}
-                        onChange={handleSearchChange}
-                    />
-                    <input
-                        type="text"
-                        name="longitude"
-                        placeholder="Longitude"
-                        value={searchParams.longitude}
-                        onChange={handleSearchChange}
-                    />
-                    <input
-                        type="text"
-                        name="postcode"
-                        placeholder="Postcode"
-                        value={searchParams.postcode}
-                        onChange={handleSearchChange}
-                    />
-                    <Button className="btn btn-primary" title='Search' onClick={handleSearchAndFetch}>Search</Button>
+                <input
+                    type="text"
+                    name="postcode"
+                    placeholder="Postcode"
+                    value={searchParams.postcode}
+                    onChange={handleInputChange}
+                />
+                <input
+                    type="text"
+                    name="latitude"
+                    placeholder="Latitude"
+                    value={searchParams.latitude}
+                    onChange={handleInputChange}
+                />
+                <input
+                    type="text"
+                    name="longitude"
+                    placeholder="Longitude"
+                    value={searchParams.longitude}
+                    onChange={handleInputChange}
+                />
+                <input
+                    type="datetime-local"
+                    name="startTime"
+                    placeholder="Start Time"
+                    value={searchParams.startTime}
+                    onChange={handleInputChange}
+                />
+                <input
+                    type="datetime-local"
+                    name="endTime"
+                    placeholder="End Time"
+                    value={searchParams.endTime}
+                    onChange={handleInputChange}
+                />
+                <Button className="btn btn-primary" onClick={handleSearch}>
+                    Search
+                </Button>
                 </div>
 
+                {loading ? (
+                <p>Loading...</p>
+                ) : (
                 <table className="table">
                     <thead>
-                        <tr>
-                            <th>Video File Name</th>
-                            <th>Dashcam Name</th>
-                            <th>File Location</th>
-                            <th>IP Address</th>
-                            <th>Latitude</th>
-                            <th>Longitude</th>
-                            <th>Postcode</th>
-                            <th>Video Start Time</th>
-                            <th>Video End Time</th>
-                            <th>Action</th> {/* New Action Column */}
-                        </tr>
+                    <tr>
+                        <th style={{ wordWrap: 'break-word', maxWidth: '150px' }}>Video File Name</th>
+                        <th style={{ wordWrap: 'break-word', maxWidth: '150px' }}>Dashcam Name</th>
+                        <th style={{ wordWrap: 'break-word', maxWidth: '150px' }}>File Location</th>
+                        <th style={{ wordWrap: 'break-word', maxWidth: '150px' }}>IP Address</th>
+                        <th style={{ wordWrap: 'break-word', maxWidth: '150px' }}>Latitude</th>
+                        <th style={{ wordWrap: 'break-word', maxWidth: '150px' }}>Longitude</th>
+                        <th style={{ wordWrap: 'break-word', maxWidth: '150px' }}>Postcode</th>
+                        <th style={{ wordWrap: 'break-word', maxWidth: '150px' }}>Video Start Time</th>
+                        <th style={{ wordWrap: 'break-word', maxWidth: '150px' }}>Video End Time</th>
+                    </tr>
                     </thead>
                     <tbody>
-                        {Array.isArray(apiResult) && apiResult.length > 0 ? (
-                            apiResult.map((dashcam) => (
-                                <tr key={dashcam.video_file_name}>
-                                    <td style={{ wordWrap: 'break-word', maxWidth: '150px' }}>{dashcam.video_file_name}</td>
-                                    <td style={{ wordWrap: 'break-word', maxWidth: '150px' }}>{dashcam.dashcam_name}</td>
-                                    <td style={{ wordWrap: 'break-word', maxWidth: '150px' }}>{dashcam.file_location}</td>
-                                    <td style={{ wordWrap: 'break-word', maxWidth: '150px' }}>{dashcam.ip_address}</td>
-                                    <td style={{ wordWrap: 'break-word', maxWidth: '150px' }}>{dashcam.Latitude}</td>
-                                    <td style={{ wordWrap: 'break-word', maxWidth: '150px' }}>{dashcam.longitude}</td>
-                                    <td style={{ wordWrap: 'break-word', maxWidth: '150px' }}>{dashcam.postcode}</td>
-                                    <td style={{ wordWrap: 'break-word', maxWidth: '150px' }}>{dashcam.video_start_time}</td>
-                                    <td style={{ wordWrap: 'break-word', maxWidth: '150px' }}>{dashcam.video_end_time}</td>
-                                    <td>
-                                        <button onClick={() => {}}>
-                                            Play Video
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))
-                        ) : (
-                            <tr>
-                                <td colSpan="10">No dashcams found.</td>
-                            </tr>
-                        )}
+                    {filteredRecords.length > 0 ? (
+                        filteredRecords.map((record, index) => (
+                        <tr key={index}>
+                            <td style={{ wordWrap: 'break-word', maxWidth: '150px' }}>{record.video_file_name}</td>
+                            <td style={{ wordWrap: 'break-word', maxWidth: '150px' }}>{record.dashcam_name}</td>
+                            <td style={{ wordWrap: 'break-word', maxWidth: '150px' }}>{record.file_location}</td>
+                            <td style={{ wordWrap: 'break-word', maxWidth: '150px' }}>{record.ip_address}</td>
+                            <td style={{ wordWrap: 'break-word', maxWidth: '150px' }}>{record.latitude}</td>
+                            <td style={{ wordWrap: 'break-word', maxWidth: '150px' }}>{record.longitude}</td>
+                            <td style={{ wordWrap: 'break-word', maxWidth: '150px' }}>{record.postcode}</td>
+                            <td style={{ wordWrap: 'break-word', maxWidth: '150px' }}>{record.video_start_time}</td>
+                            <td style={{ wordWrap: 'break-word', maxWidth: '150px' }}>{record.video_end_time}</td>
+                        </tr>
+                        ))
+                    ) : (
+                        <tr>
+                        <td colSpan="9">No records found</td>
+                        </tr>
+                    )}
                     </tbody>
-
                 </table>
+                )}
             </div>
-        </div>
-    );
-};
+            </div>
+        );
+        };
 
-export default DbTable;
+
+    export default DbTable;
