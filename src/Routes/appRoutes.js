@@ -27,7 +27,7 @@ const AppRoutes = () => {
             <Route path="/VideoViewer" element={<VideoViewer/>} />
             <Route path="/BucketAccess" element={<BucketAccess/>} />
             <Route path="/Dashboard" element={<Dashboard/>} />
-            <Route path="/SendCommand" element={<SendCommand/>} />
+            {/* <Route path="/SendCommand" element={<SendCommand/>} /> */}
             <Route path="/VideoPlayer" element={<VideoPlayer/>} />
             <Route path="/DbTable" element={<DbTable/>} />
 

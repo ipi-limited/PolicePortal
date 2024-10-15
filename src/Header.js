@@ -27,10 +27,10 @@ const Header = ({onHomeClick}) => {
           <Nav.Link onClick={() => navigate('/')}>Home</Nav.Link> {/* Home Tab */}
         </Nav.Item>
         <Nav.Item>
-          <Nav.Link onClick={() => navigate('/SendCommand')}>Send Command</Nav.Link>
+          <Nav.Link onClick={() => navigate('/StreamVideo')}>Video Streaming</Nav.Link>
         </Nav.Item>
         <Nav.Item>
-          <Nav.Link onClick={() => navigate('/BucketAccess')}>Bucket Access</Nav.Link> 
+          <Nav.Link onClick={() => navigate('/BucketAccess')}>Cloud Storage</Nav.Link> 
         </Nav.Item>
         <Nav.Item>
           <Nav.Link onClick={() => navigate('/DbTable')}>DataBase</Nav.Link> 

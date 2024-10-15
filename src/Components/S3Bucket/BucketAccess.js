@@ -78,9 +78,9 @@ const BucketAccess = () => {
         console.log('data',apiResult)
         // Initialize AWS SDK for S3
         AWS.config.update({
-          region: 'eu-west-2', // Change to your S3 bucket region
+          region: 'eu-west-2',
           credentials: new AWS.CognitoIdentityCredentials({
-            IdentityPoolId: 'eu-west-2:eb767e70-8369-4099-9596-58f5d78cd65c', // Your Identity Pool ID
+            IdentityPoolId: 'eu-west-2:eb767e70-8369-4099-9596-58f5d78cd65c',
             Logins: {
               [`cognito-idp.eu-west-2.amazonaws.com/${poolData.UserPoolId}`]: idToken
             }
@@ -123,7 +123,7 @@ const BucketAccess = () => {
     <div>
             <Header />
             <div className="container mt-4">
-                <h2 className="text-center">S3 Bucket Contents</h2>
+                <h2 className="text-center">DashCam Records</h2>
                 {s3Data && (
                     <div className="row">
                         {s3Data.map(item => (

@@ -3,6 +3,7 @@
     import Header from '../../Header';
     import AWS from 'aws-sdk';
     import { CognitoUserPool, AuthenticationDetails, CognitoUser } from 'amazon-cognito-identity-js';
+    import { FaUpload } from 'react-icons/fa';
 
     const poolData = {
         UserPoolId: 'eu-west-2_9hCbrQq4P',
@@ -18,7 +19,7 @@
             longitude: '',
             startTime: '',
             endTime: '',
-            radius: 1,
+            radius: '',
         });
 
         const [records, setRecords] = useState([]);
@@ -32,6 +33,8 @@
             longitude_min: null,
             longitude_max: null,
         });
+        const [selectedFile, setSelectedFile] = useState(null);
+
 
         useEffect(() => {
             const savedUsername = localStorage.getItem('username');
@@ -189,7 +192,7 @@
                 longitude: '',
                 startTime: '',
                 endTime: '',
-                radius: 1,
+                radius: '' ,
             });
         
         };
@@ -214,12 +217,44 @@
             return `${year}${month}${day}_${hours}${minutes}`;
         };
         
-
+        const handleFileChange = async (record) => {
+            console.log('record',record)
+            
+                const command = 'upload';
+        
+                const requestBody = {
+                    command,
+                    file_name: record.video_file_name,
+                    file_path: record.file_location
+                };
+                console.log('requestBody',requestBody)
+                try {
+                    const response = await fetch('https://q3f7b9mv99.execute-api.eu-west-2.amazonaws.com/dev/commands', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(requestBody)
+                    });
+        
+                    const data = await response.json();
+                    console.log('data',data)
+                    if (response.ok) {
+                        alert(`Upload command sent successfully for ${record.dashcam_name}.`);
+                    } else {
+                        alert(`Error: ${data.message}`);
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Failed to send upload command');
+                }
+            };
+        
         return (
             <div>
             <Header />
             <div className="container mt-4">
-                <h2 className="text-center">Search Dashcam Records</h2>
+                <h2 className="text-center">Search Records</h2>
                 <div style={{ margin: '5px', display: 'flex', justifyContent: 'space-between' }}>
                 <input
                     type="text"
@@ -242,6 +277,17 @@
                     value={searchParams.longitude}
                     onChange={handleInputChange}
                 />
+                <select
+              name="radius"
+              value={searchParams.radius}
+              onChange={handleInputChange}
+            >
+              {Array.from({ length: 10 }, (_, i) => i + 1).map((radiusValue) => (
+                <option key={radiusValue} value={radiusValue}>
+                  {radiusValue} mile{radiusValue > 1 ? 's' : ''}
+                </option>
+              ))}
+            </select>
                 <input
                     type="datetime-local"
                     name="startTime"
@@ -276,6 +322,7 @@
                         <th style={{ wordWrap: 'break-word', maxWidth: '150px' }}>Postcode</th>
                         <th style={{ wordWrap: 'break-word', maxWidth: '150px' }}>Video Start Time</th>
                         <th style={{ wordWrap: 'break-word', maxWidth: '150px' }}>Video End Time</th>
+                        <th style={{ wordWrap: 'break-word', maxWidth: '150px' }}>Video Upload</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -291,6 +338,12 @@
                             <td style={{ wordWrap: 'break-word', maxWidth: '150px' }}>{record.postcode}</td>
                             <td style={{ wordWrap: 'break-word', maxWidth: '150px' }}>{record.video_start_time}</td>
                             <td style={{ wordWrap: 'break-word', maxWidth: '150px' }}>{record.video_end_time}</td>
+                            <td  style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                                <FaUpload 
+                                onClick={() => handleFileChange(record)}
+                                style={{ cursor: 'pointer' }}
+                                />
+                            </td>
                         </tr>
                         ))
                     ) : (
