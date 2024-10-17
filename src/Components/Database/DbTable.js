@@ -15,6 +15,7 @@
     const DbTable = () => {
         const [searchParams, setSearchParams] = useState({
             postcode: '',
+            numberPlate:'',
             latitude: '',
             longitude: '',
             startTime: '',
@@ -155,6 +156,14 @@
                         matches = false;
                     }
                 }
+
+                if (searchParams.numberPlate) {
+                    if (record.number_plate) {
+                        matches &= record.number_plate.toLowerCase().includes(searchParams.numberPlate.toLowerCase());
+                    } else {
+                        matches = false;
+                    }
+                }
         
                 // Check for latitude and longitude within bounding box
                 if (searchParams.latitude && searchParams.longitude) {
@@ -188,6 +197,7 @@
             setFilteredRecords(filtered);
             setSearchParams({
                 postcode: '',
+                numberPlate: '',
                 latitude: '',
                 longitude: '',
                 startTime: '',
@@ -265,6 +275,13 @@
                 />
                 <input
                     type="text"
+                    name="numberPlate"
+                    placeholder="Number Plate"
+                    value={searchParams.numberPlate}
+                    onChange={handleInputChange}
+                />
+                <input
+                    type="text"
                     name="latitude"
                     placeholder="Latitude"
                     value={searchParams.latitude}
@@ -316,7 +333,7 @@
                         <th style={{ wordWrap: 'break-word', maxWidth: '150px' }}>Video File Name</th>
                         <th style={{ wordWrap: 'break-word', maxWidth: '150px' }}>Dashcam Name</th>
                         <th style={{ wordWrap: 'break-word', maxWidth: '150px' }}>File Location</th>
-                        <th style={{ wordWrap: 'break-word', maxWidth: '150px' }}>IP Address</th>
+                        <th style={{ wordWrap: 'break-word', maxWidth: '150px' }}>Number Plate</th>
                         <th style={{ wordWrap: 'break-word', maxWidth: '150px' }}>Latitude</th>
                         <th style={{ wordWrap: 'break-word', maxWidth: '150px' }}>Longitude</th>
                         <th style={{ wordWrap: 'break-word', maxWidth: '150px' }}>Postcode</th>
@@ -332,7 +349,7 @@
                             <td style={{ wordWrap: 'break-word', maxWidth: '150px' }}>{record.video_file_name}</td>
                             <td style={{ wordWrap: 'break-word', maxWidth: '150px' }}>{record.dashcam_name}</td>
                             <td style={{ wordWrap: 'break-word', maxWidth: '150px' }}>{record.file_location}</td>
-                            <td style={{ wordWrap: 'break-word', maxWidth: '150px' }}>{record.ip_address}</td>
+                            <td style={{ wordWrap: 'break-word', maxWidth: '150px' }}>{record.number_plate}</td>
                             <td style={{ wordWrap: 'break-word', maxWidth: '150px' }}>{record.latitude}</td>
                             <td style={{ wordWrap: 'break-word', maxWidth: '150px' }}>{record.longitude}</td>
                             <td style={{ wordWrap: 'break-word', maxWidth: '150px' }}>{record.postcode}</td>
