@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import Header from './Header';
-import appRoutes from './Routes/appRoutes';
+import useIdleTimer from './Hooks/useIdleTimer';
 
 function App() {
-
+  
   const [isStarted, setIsStarted] = useState(false); 
 
   const handleStart = () => {

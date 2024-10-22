@@ -13,10 +13,7 @@ const region = 'eu-west-2';
 
 const userPool = new CognitoUserPool(poolData);
 
-// Create the AuthContext
 const AuthContext = createContext();
-
-// Export a hook to use the AuthContext
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
@@ -105,6 +102,11 @@ export const AuthProvider = ({ children }) => {
       setUser(null);
       setIdToken(null);
       setIsAuthenticated(false);
+      
+      // Clear sessionStorage
+      sessionStorage.removeItem('username');
+      sessionStorage.removeItem('idToken');
+  
       AWS.config.credentials.clearCachedId();
       console.log('User signed out');
     }
@@ -147,6 +149,7 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
     }
   }, []);
+  
 
   return (
     <AuthContext.Provider value={{ isAuthenticated, signIn, signOut, user, idToken, loading }}>

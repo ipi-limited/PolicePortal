@@ -263,9 +263,9 @@
         return (
             <div>
             <Header />
-            <div className="container mt-4">
+            <div className="container mt-2">
                 <h2 className="text-center">Search Records</h2>
-                <div style={{ margin: '5px', display: 'flex', justifyContent: 'space-between' }}>
+                <div style={{ margin: '5px', display: 'flex', justifyContent: 'space-between', gap:'5px' }}>
                 <input
                     type="text"
                     name="postcode"

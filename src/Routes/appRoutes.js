@@ -11,10 +11,11 @@ import Login from '../Components/LoginPage';
 import { useAuth } from '../Hooks/AuthContext';
 import VideoPlayer from '../Components/S3Bucket/VideoPlayer';
 import DbTable from '../Components/Database/DbTable';
+import useIdleTimer  from '../Hooks/useIdleTimer';
 
 const AppRoutes = () => {
     const { isAuthenticated, loading } = useAuth(); 
-
+    useIdleTimer(5 * 60 * 1000); 
     if (loading) {
         return <div>Loading...</div>;
       }
