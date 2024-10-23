@@ -286,6 +286,17 @@
                     placeholder="Latitude"
                     value={searchParams.latitude}
                     onChange={handleInputChange}
+                    onPaste={(e) => {
+                        const pastedData = e.clipboardData.getData('Text');
+                        const [lat, long] = pastedData.split(',').map(coord => coord.trim());
+                        setSearchParams((prevParams) => ({
+                            ...prevParams,
+                            latitude: lat,
+                            longitude: long // Set longitude as well
+                        }));
+                        e.preventDefault(); // Prevent the default paste action
+                    }}
+                
                 />
                 <input
                     type="text"
