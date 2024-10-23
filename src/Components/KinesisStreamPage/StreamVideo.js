@@ -3,6 +3,7 @@ import AWS from 'aws-sdk';
 import { SignalingClient, Role } from 'amazon-kinesis-video-streams-webrtc';
 import { AuthenticationDetails, CognitoUser, CognitoUserPool } from 'amazon-cognito-identity-js';
 import Header from '../../Header';
+import { useLocation } from 'react-router-dom';
 
 const StreamVideo = () => {
   const [username, setUsername] = useState('');
@@ -15,6 +16,7 @@ const StreamVideo = () => {
   const [credentials, setCredentials] = useState(null);
   const [response, setResponse] = useState('');
   const videoRef = useRef();
+  const location = useLocation();
   let peerConnection;
   let signalingClient;
 
@@ -60,6 +62,7 @@ const StreamVideo = () => {
       const data = await res.json();
       if (res.ok) {
         setResponse(`Command '${command}' sent successfully`);
+        console.log(`Command '${command}' sent successfully`);
       } else {
         setResponse(`Error: ${data}`);
       }
@@ -69,17 +72,41 @@ const StreamVideo = () => {
     }
   };
 
-  const authenticateUser = () => {
-    setUsername(localStorage.getItem('username'))
-    console.log('UserName',username)
-    if (!username || !password) {
-      alert('Please enter both username and password.');
-      return;
-    }
+  useEffect(() => {
+    const handleRouteChange = () => {
+      console.log('Route changed to:', location.pathname);
+
+      if (location.pathname === '/StreamVideo') {
+        authenticateUser();
+        sendCommand('start');
+        console.log('Start Command Sent');
+        setupViewer(channelARN, credentials, wssEndpoint);
+      } else {
+        sendCommand('stop');
+        console.log('Stop Command Sent');
+        stopViewer();
+      }
+    };
+    handleRouteChange();
+    console.log('User navigated to:', location.pathname);
+  }, [location]);
+
+
+  const authenticateUser = async() => {
+    const storedUsername = localStorage.getItem('username');
+    const storedPassword = localStorage.getItem('password');
+
+  if (!storedUsername || !storedPassword) {
+    alert('Please enter both username and password.');
+    return;
+  }
+
+  setUsername(storedUsername); 
+  setPassword(storedPassword); 
 
     const authenticationData = {
-      Username: username,
-      Password: password,
+      Username: storedUsername,
+      Password: storedPassword,
     };
 
     const authenticationDetails = new AuthenticationDetails(authenticationData);
@@ -92,7 +119,7 @@ const StreamVideo = () => {
     const userPool = new CognitoUserPool(poolData);
 
     const userData = {
-      Username: username,
+      Username: storedUsername,
       Pool: userPool,
     };
 
@@ -200,9 +227,9 @@ console.log('entered into set up viewer');
         } else {
             console.error('Video ref is null. The video element is not rendered yet.');
         }
-
       };
 
+      
       signalingClient.on('open', async () => {
         console.log('Signaling client connected');
         const offer = await peerConnection.createOffer({
@@ -262,14 +289,41 @@ console.log('entered into set up viewer');
     }
   };
   
+  const handleVisibilityChange = () => {
+    console.log('Entered into visibility change');
+    if (document.visibilityState === 'visible') {
+      authenticateUser();
+      sendCommand('start');
+      console.log('Start Command Sent');
+      setupViewer(channelARN, credentials, wssEndpoint);
+    } else {
+      sendCommand('stop');
+      console.log('Stop Command Sent');
+      stopViewer();
+    }
+  };
+
+  useEffect(() => {
+    console.log('Enter into use effect');
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      sendCommand('stop'); 
+      console.log('Stop command send')
+      stopViewer(); 
+    };
+  }, []);
+
+
 
   return (
     <div>
         <Header />
         <div className="container mt-4">
-        <h2 className="text-center">Live Streaming</h2>
+        <h2 className="text-center mb-4">Live Streaming</h2>
 
-        <div className="d-flex flex-row align-items-center justify-content-center mt-4">
+        {/* <div className="d-flex flex-row align-items-center justify-content-center mt-4">
           <button
             className="btn btn-primary mb-3"
             onClick={() => {
@@ -288,7 +342,7 @@ console.log('entered into set up viewer');
           >
             Stop
           </button>
-        </div>
+        </div> */}
 
       {/* <pre>{output}</pre> */}
       <video

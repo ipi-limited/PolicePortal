@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../Hooks/AuthContext'; 
 import Header from '../../Header';
+import './Login.css';
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -20,26 +21,49 @@ const Login = () => {
   };
 
   return (
-    <div>
-            <Header />
-        <div className="container">      
-            <div className='text-center mt-3'>
-                <h2 className="text-center text-black">Login Page</h2>
-            </div>
-            <div className="d-flex flex-column align-items-center mt-4">
-            <div className="mb-3 w-49">
-                <input type="text" id="username" name="username"placeholder='Enter UserName' className="form-control" value={username} onChange={e => setUsername(e.target.value)} />
-            </div>
+    <div className="login-page">
+      <Header />
+      <div className="login-container">
+        <div className="left-side">
+          {/* Add your image here */}
+          <div className="curved-side">
+            <img src="/images/Police.png" alt="Police" className="police-image" />
+          </div>
+        </div>
+        <div className="right-side">
+          <div className='text-center mt-3'>
+            <h2 className="text-center text-black">Police Login</h2>
+          </div>
+          <div className="d-flex flex-column align-items-center mt-4">
+            <div className="login-form w-75">
+              <input 
+                type="text" 
+                id="username" 
+                name="username"
+                placeholder='Enter Username' 
+                className="form-control mb-3" 
+                value={username} 
+                onChange={e => setUsername(e.target.value)} 
+              />
 
-            <div className="mb-3 w-49">
-                <input type="password" id="password" name="password"placeholder='Enter Password' className="form-control" value={password} onChange={e => setPassword(e.target.value)} />
+              <input 
+                type="password" 
+                id="password" 
+                name="password"
+                placeholder='Enter Password' 
+                className="form-control mb-3" 
+                value={password} 
+                onChange={e => setPassword(e.target.value)} 
+              />
+
+              <button className="btn btn-primary w-100" onClick={handleLogin}>Login</button>
             </div>
-            <button className="btn btn-primary" onClick={handleLogin}>Login</button>
-            </div>
-        <div>
+          </div>
+        </div>
+      </div>
     </div>
-    </div>
-    </div>
+
+
   );
 };
 
