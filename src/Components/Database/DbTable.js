@@ -1,9 +1,10 @@
-    import React, { useState, useEffect, useCallback } from 'react';
+    import React, { useState, useEffect, useCallback, useRef, useLayoutEffect } from 'react';
     import { Button } from 'react-bootstrap';
     import Header from '../../Header';
     import AWS from 'aws-sdk';
     import { CognitoUserPool, AuthenticationDetails, CognitoUser } from 'amazon-cognito-identity-js';
     import { FaUpload } from 'react-icons/fa';
+    import MapTraces from '../../Hooks/MapTraces';
 
     const poolData = {
         UserPoolId: 'eu-west-2_9hCbrQq4P',
@@ -34,8 +35,20 @@
             longitude_min: null,
             longitude_max: null,
         });
-        const [selectedFile, setSelectedFile] = useState(null);
+        const [isMapRender, setIsMapRender] = useState(false);
+        const [selectedRecords, setSelectedRecords] = useState(new Set()); 
+        const [mapCoordinates, setMapCoordinates] = useState([]);
 
+        const mapRef = useRef(null);  
+
+        useLayoutEffect(() => {
+            if (mapCoordinates.length > 0 && mapRef.current) {
+                mapRef.current.scrollIntoView({ behavior: 'smooth' });
+                setIsMapRender(true);
+            }
+        }, [mapCoordinates]); 
+
+        
 
         useEffect(() => {
             const savedUsername = localStorage.getItem('username');
@@ -122,10 +135,7 @@
             };        
         };
 
-        const fetchRecordsFromDynamoDB = useCallback(async () => {
-
-            
-            
+        const fetchRecordsFromDynamoDB = useCallback(async () => {     
             
         }, []);
 
@@ -259,11 +269,82 @@
                     alert('Failed to send upload command');
                 }
             };
+
+            const handleRowSelection = (selectedRows) => {
+                const coordinates = selectedRows.map(row => {
+                    const lat = parseFloat(row.latitude);
+                    const lng = parseFloat(row.longitude);
+            
+                    if (!isNaN(lat) && !isNaN(lng) && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
+                        return {
+                            id: row.video_file_name,
+                            lat,
+                            lng,
+                            timestamp: row.video_end_time 
+                        };
+                    } else {
+                        console.error('Invalid coordinates for record:', row);
+                        return null;
+                    }
+                }).filter(coord => coord !== null);
+            
+                if (coordinates.length === 0) {
+                    console.warn('No valid coordinates selected.');
+                } else {
+                    setMapCoordinates(coordinates);
+                }
+                console.log('Selected coordinates Roe Selection:', mapCoordinates);
+            };
+            
+            
         
+            const handleCheckboxChange = (record) => {
+                setSelectedRecords((prevSelectedRecords) => {
+                    const updatedSelection = new Set(prevSelectedRecords);
+                    if (updatedSelection.has(record)) {
+                        updatedSelection.delete(record);
+                    } else {
+                        updatedSelection.add(record);
+                    }
+                    const selectedRows = Array.from(updatedSelection);
+                    handleRowSelection(selectedRows);
+        
+                    return updatedSelection;
+
+                });            
+            };
+        
+            const handleShowMap = () => {
+                const selectedCoordinates = Array.from(selectedRecords).map(record => {
+                    const lat = parseFloat(record.latitude);
+                    const lng = parseFloat(record.longitude);
+                    const id = record.video_file_name;
+                    const timestamp = record.video_end_time;
+            
+                    if (isNaN(lat) || isNaN(lng)) {
+                        console.error('Invalid lat/lng:', lat, lng);
+                        return null; 
+                    }
+            
+                    return { lat, lng, id, timestamp };
+                }).filter(coord => coord !== null); 
+                console.log('Selected coordinates for map:', selectedCoordinates);
+                if (selectedCoordinates.length > 0) {
+                    setMapCoordinates(selectedCoordinates);
+                    if (mapRef.current) {
+                        mapRef.current.scrollIntoView({ behavior: 'smooth' });
+                    } 
+                } 
+                else {
+                    console.warn('No coordinates to show on the map.');
+                }
+                 
+            };
+        console.log('Map ',mapCoordinates);
         return (
             <div>
             <Header />
-            <div className="container mt-2">
+            <div className="container-fluid mt-2" style={{ paddingLeft: '30px', paddingRight: '30px' }}>
                 <h2 className="text-center">Search Records</h2>
                 <div style={{ margin: '5px', display: 'flex', justifyContent: 'space-between', gap:'5px' }}>
                 <input
@@ -292,9 +373,9 @@
                         setSearchParams((prevParams) => ({
                             ...prevParams,
                             latitude: lat,
-                            longitude: long // Set longitude as well
+                            longitude: long 
                         }));
-                        e.preventDefault(); // Prevent the default paste action
+                        e.preventDefault(); 
                     }}
                 
                 />
@@ -334,13 +415,20 @@
                     Search
                 </Button>
                 </div>
-
+                <div className='text-center mt-2'>
+                {selectedRecords.size > 0 && (
+                    <Button onClick={handleShowMap} className="btn btn-secondary">
+                        Show on Map
+                    </Button>
+                    )}
+                </div>
                 {loading ? (
                 <p>Loading...</p>
                 ) : (
                 <table className="table">
                     <thead>
                     <tr>
+                        <th>Select</th>
                         <th style={{ wordWrap: 'break-word', maxWidth: '150px' }}>Video File Name</th>
                         <th style={{ wordWrap: 'break-word', maxWidth: '150px' }}>Dashcam Name</th>
                         <th style={{ wordWrap: 'break-word', maxWidth: '150px' }}>File Location</th>
@@ -357,6 +445,14 @@
                     {filteredRecords.length > 0 ? (
                         filteredRecords.map((record, index) => (
                         <tr key={index}>
+                             <td>
+                                <input 
+                                type="checkbox" 
+                                style={{ width: '20px', height: '20px', marginTop:'20px' }} 
+                                checked={selectedRecords.has(record)} 
+                                onChange={() => handleCheckboxChange(record)} 
+                                />
+                            </td>
                             <td style={{ wordWrap: 'break-word', maxWidth: '150px' }}>{record.video_file_name}</td>
                             <td style={{ wordWrap: 'break-word', maxWidth: '150px' }}>{record.dashcam_name}</td>
                             <td style={{ wordWrap: 'break-word', maxWidth: '150px' }}>{record.file_location}</td>
@@ -383,6 +479,7 @@
                 </table>
                 )}
             </div>
+            {mapCoordinates.length > 0 && <MapTraces ref={mapRef} Coordinates={mapCoordinates} />}
             </div>
         );
         };

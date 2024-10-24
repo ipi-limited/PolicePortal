@@ -15,8 +15,8 @@ const center = {
 const carMarkerIcon = '/Images/CarPin.png'
 const Dashboard = () => {
   const { records, loading } = useActiveDashcam();
-console.log('Records from DB', records)
-
+  
+  console.log('Records from DB', records);
 
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: 'AIzaSyDRMqUF1M3QUCEEfTlnXhlbK1CeG3dd0Uc',
@@ -64,7 +64,7 @@ console.log('Records from DB', records)
                             title={record.timestamp} 
                             icon={{
                               url: carMarkerIcon,
-                              scaledSize: new window.google.maps.Size(50, 50),
+                              scaledSize: new window.google.maps.Size(60, 60),
                           }}
                         />
                     ))}

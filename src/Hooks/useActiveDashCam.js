@@ -83,7 +83,7 @@ const userPool = new CognitoUserPool(poolData);
             '#ts': 'video_end_time',
           },
           ExpressionAttributeValues: {
-            ':time': formatToComparableString(fiveMinutesAgo), //'20241023_113531'
+            ':time':   '20241023_130000' //formatToComparableString(fiveMinutesAgo),
           },
         };
         console.log('Params',params);
