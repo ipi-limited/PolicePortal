@@ -5,12 +5,15 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import Header from '../../Header';
 import { useNavigate } from 'react-router-dom';
 import { FaFileVideo, FaFileAlt } from 'react-icons/fa';
+import awsExports from '../../aws-exports'
 
 const BucketAccess = () => {
     const [s3Data, setS3Data] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const navigate = useNavigate();
     const dashcamName = 'dashcam0058/';
+    const bucketName = awsExports.aws_user_files_s3_bucket;
+    const region = awsExports.aws_user_files_s3_bucket_region;
 
     const { user } = useAuthenticator((context) => [context.user]);
     const identityId = user.userId;
@@ -35,16 +38,19 @@ const BucketAccess = () => {
         fetchS3Data();
     }, []);
 
-    const handleVideoClick = async (videoKey) => {
+    const handleVideoClick = async (videoUrl) => {
         try {
             const result = await getProperties({
-              path: videoKey,
+              path: videoUrl,
             });
             console.log('File Properties ', result);
+            const videoLink = `https://${bucketName}.s3.${region}.amazonaws.com/${videoUrl}`
+            console.log('url',videoLink);
+            navigate('/VideoPlayer', { state: { videoLink } });
+
           } catch (error) {
             console.log('Error ', error);
           }
-          
     };
     return (
 <div>
