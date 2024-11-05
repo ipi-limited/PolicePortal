@@ -4,16 +4,21 @@ import './index.css';
 import AppRoutes from './Routes/appRoutes';
 import { BrowserRouter } from 'react-router-dom'; 
 import reportWebVitals from './reportWebVitals';
-import { AuthProvider } from './Hooks/AuthContext';
-
+import { withAuthenticator } from '@aws-amplify/ui-react';
+import { Amplify } from 'aws-amplify';
+import awsExports from './aws-exports'
+import {generateClient} from 'aws-amplify/api'
 const root = ReactDOM.createRoot(document.getElementById('root'));
+
+Amplify.configure(awsExports);
+const AuthenticatedApp = withAuthenticator(AppRoutes); 
+const client = generateClient();
+
 root.render(
   <React.StrictMode>
-    <AuthProvider>
       <BrowserRouter>
-        <AppRoutes />
+      <AuthenticatedApp />
       </BrowserRouter>
-    </AuthProvider>
   </React.StrictMode>
 );
 

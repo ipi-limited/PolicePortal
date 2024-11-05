@@ -1,0 +1,42 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-ltedashcam-dev-b82f1-authRole",
+      "UnauthRoleArn": "arn:aws:iam::211125530433:role/amplify-ltedashcam-dev-b82f1-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::211125530433:role/amplify-ltedashcam-dev-b82f1-authRole",
+      "Region": "eu-west-2",
+      "DeploymentBucketName": "amplify-ltedashcam-dev-b82f1-deployment",
+      "UnauthRoleName": "amplify-ltedashcam-dev-b82f1-unauthRole",
+      "StackName": "amplify-ltedashcam-dev-b82f1",
+      "StackId": "arn:aws:cloudformation:eu-west-2:211125530433:stack/amplify-ltedashcam-dev-b82f1/d87f03b0-9536-11ef-91cf-023542703e4d",
+      "AmplifyAppId": "d411bzp7bvizr"
+    },
+    "categories": {
+      "auth": {
+        "ltedashcam95e2ca98": {}
+      },
+      "function": {
+        "S3Trigger4bf95ce9": {
+          "deploymentBucketName": "amplify-ltedashcam-dev-b82f1-deployment",
+          "s3Key": "amplify-builds/S3Trigger4bf95ce9-397643742f3337333777-build.zip"
+        }
+      },
+      "storage": {
+        "demotable": {
+          "tableName": "demo-table",
+          "region": "eu-west-2",
+          "arn": "arn:aws:dynamodb:eu-west-2:211125530433:table/demo-table",
+          "partitionKeyName": "video_file_name",
+          "partitionKeyType": "S"
+        },
+        "ltedashcame92c72bd": {
+          "bucketName": "test-bucket-rach",
+          "region": "eu-west-2"
+        }
+      },
+      "api": {
+        "ltedashcam": {}
+      }
+    }
+  }
+}

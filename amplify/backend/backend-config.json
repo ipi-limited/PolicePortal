@@ -1,0 +1,141 @@
+{
+  "api": {
+    "ltedashcam": {
+      "dependsOn": [],
+      "output": {
+        "authConfig": {
+          "additionalAuthenticationProviders": [],
+          "defaultAuthentication": {
+            "apiKeyConfig": {
+              "apiKeyExpirationDays": 7
+            },
+            "authenticationType": "API_KEY"
+          }
+        }
+      },
+      "providerPlugin": "awscloudformation",
+      "service": "AppSync"
+    }
+  },
+  "auth": {
+    "ltedashcam95e2ca98": {
+      "customAuth": false,
+      "dependsOn": [],
+      "frontendAuthConfig": {
+        "mfaConfiguration": "OFF",
+        "mfaTypes": [
+          "SMS"
+        ],
+        "passwordProtectionSettings": {
+          "passwordPolicyCharacters": [],
+          "passwordPolicyMinLength": 8
+        },
+        "signupAttributes": [
+          "EMAIL"
+        ],
+        "socialProviders": [],
+        "usernameAttributes": [],
+        "verificationMechanisms": [
+          "EMAIL"
+        ]
+      },
+      "providerPlugin": "awscloudformation",
+      "service": "Cognito"
+    }
+  },
+  "function": {
+    "S3Trigger4bf95ce9": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    }
+  },
+  "parameters": {
+    "AMPLIFY_function_S3Trigger4bf95ce9_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "S3Trigger4bf95ce9"
+        }
+      ]
+    },
+    "AMPLIFY_function_S3Trigger4bf95ce9_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "S3Trigger4bf95ce9"
+        }
+      ]
+    },
+    "AMPLIFY_storage_demotable_arn": {
+      "usedBy": [
+        {
+          "category": "storage",
+          "resourceName": "demotable"
+        }
+      ]
+    },
+    "AMPLIFY_storage_demotable_partitionKeyName": {
+      "usedBy": [
+        {
+          "category": "storage",
+          "resourceName": "demotable"
+        }
+      ]
+    },
+    "AMPLIFY_storage_demotable_partitionKeyType": {
+      "usedBy": [
+        {
+          "category": "storage",
+          "resourceName": "demotable"
+        }
+      ]
+    },
+    "AMPLIFY_storage_demotable_region": {
+      "usedBy": [
+        {
+          "category": "storage",
+          "resourceName": "demotable"
+        }
+      ]
+    },
+    "AMPLIFY_storage_demotable_tableName": {
+      "usedBy": [
+        {
+          "category": "storage",
+          "resourceName": "demotable"
+        }
+      ]
+    },
+    "AMPLIFY_storage_ltedashcame92c72bd_bucketName": {
+      "usedBy": [
+        {
+          "category": "storage",
+          "resourceName": "ltedashcame92c72bd"
+        }
+      ]
+    },
+    "AMPLIFY_storage_ltedashcame92c72bd_region": {
+      "usedBy": [
+        {
+          "category": "storage",
+          "resourceName": "ltedashcame92c72bd"
+        }
+      ]
+    }
+  },
+  "storage": {
+    "demotable": {
+      "dependsOn": [],
+      "providerPlugin": "awscloudformation",
+      "service": "DynamoDB",
+      "serviceType": "imported"
+    },
+    "ltedashcame92c72bd": {
+      "dependsOn": [],
+      "providerPlugin": "awscloudformation",
+      "service": "S3",
+      "serviceType": "imported"
+    }
+  }
+}

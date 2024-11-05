@@ -1,0 +1,132 @@
+{
+  "providers": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-ltedashcam-dev-b82f1-authRole",
+      "UnauthRoleArn": "arn:aws:iam::211125530433:role/amplify-ltedashcam-dev-b82f1-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::211125530433:role/amplify-ltedashcam-dev-b82f1-authRole",
+      "Region": "eu-west-2",
+      "DeploymentBucketName": "amplify-ltedashcam-dev-b82f1-deployment",
+      "UnauthRoleName": "amplify-ltedashcam-dev-b82f1-unauthRole",
+      "StackName": "amplify-ltedashcam-dev-b82f1",
+      "StackId": "arn:aws:cloudformation:eu-west-2:211125530433:stack/amplify-ltedashcam-dev-b82f1/d87f03b0-9536-11ef-91cf-023542703e4d",
+      "AmplifyAppId": "d411bzp7bvizr"
+    }
+  },
+  "auth": {
+    "ltedashcam95e2ca98": {
+      "customAuth": false,
+      "dependsOn": [],
+      "frontendAuthConfig": {
+        "mfaConfiguration": "OFF",
+        "mfaTypes": [
+          "SMS"
+        ],
+        "passwordProtectionSettings": {
+          "passwordPolicyMinLength": 8,
+          "passwordPolicyCharacters": []
+        },
+        "signupAttributes": [
+          "EMAIL"
+        ],
+        "socialProviders": [],
+        "usernameAttributes": [],
+        "verificationMechanisms": [
+          "EMAIL"
+        ]
+      },
+      "providerPlugin": "awscloudformation",
+      "service": "Cognito",
+      "output": {
+        "UserPoolId": "eu-west-2_aDcYJidFr",
+        "AppClientIDWeb": "4iv29v6qcmj5dhgn5cebe5ffmf",
+        "AppClientID": "f0b6tamviru8bps1ncqn5os9m",
+        "IdentityPoolId": "eu-west-2:0a33b091-e4f4-499a-9955-8e1cdff5809d",
+        "UserPoolArn": "arn:aws:cognito-idp:eu-west-2:211125530433:userpool/eu-west-2_aDcYJidFr",
+        "IdentityPoolName": "ltedashcam95e2ca98_identitypool_95e2ca98__dev",
+        "UserPoolName": "ltedashcam95e2ca98_userpool_95e2ca98"
+      },
+      "lastPushTimeStamp": "2024-11-04T14:51:44.768Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-ltedashcam-dev-b82f1-deployment/amplify-cfn-templates/auth/ltedashcam95e2ca98-cloudformation-template.json",
+        "logicalId": "authltedashcam95e2ca98"
+      }
+    }
+  },
+  "function": {
+    "S3Trigger4bf95ce9": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda",
+      "output": {
+        "LambdaExecutionRoleArn": "arn:aws:iam::211125530433:role/S3Trigger4bf95ce9LambdaRole4bf95ce9-dev",
+        "Region": "eu-west-2",
+        "Arn": "arn:aws:lambda:eu-west-2:211125530433:function:S3Trigger4bf95ce9-dev",
+        "Name": "S3Trigger4bf95ce9-dev",
+        "LambdaExecutionRole": "S3Trigger4bf95ce9LambdaRole4bf95ce9-dev"
+      },
+      "lastPushTimeStamp": "2024-11-04T14:51:44.772Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-ltedashcam-dev-b82f1-deployment/amplify-cfn-templates/function/S3Trigger4bf95ce9-cloudformation-template.json",
+        "logicalId": "functionS3Trigger4bf95ce9"
+      },
+      "s3Bucket": {
+        "deploymentBucketName": "amplify-ltedashcam-dev-b82f1-deployment",
+        "s3Key": "amplify-builds/S3Trigger4bf95ce9-397643742f3337333777-build.zip"
+      }
+    }
+  },
+  "storage": {
+    "demotable": {
+      "service": "DynamoDB",
+      "serviceType": "imported",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [],
+      "output": {
+        "Name": "demo-table",
+        "Region": "eu-west-2",
+        "Arn": "arn:aws:dynamodb:eu-west-2:211125530433:table/demo-table",
+        "PartitionKeyName": "video_file_name",
+        "PartitionKeyType": "S"
+      },
+      "lastPushTimeStamp": "2024-11-04T10:49:48.692Z"
+    },
+    "ltedashcame92c72bd": {
+      "service": "S3",
+      "serviceType": "imported",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [],
+      "output": {
+        "BucketName": "test-bucket-rach",
+        "Region": "eu-west-2"
+      },
+      "lastPushTimeStamp": "2024-11-04T12:08:08.866Z"
+    }
+  },
+  "api": {
+    "ltedashcam": {
+      "service": "AppSync",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [],
+      "output": {
+        "authConfig": {
+          "defaultAuthentication": {
+            "authenticationType": "API_KEY",
+            "apiKeyConfig": {
+              "apiKeyExpirationDays": 7
+            }
+          },
+          "additionalAuthenticationProviders": []
+        },
+        "GraphQLAPIIdOutput": "ylvtjcgcevgcnhqjqk2sjlh25m",
+        "GraphQLAPIEndpointOutput": "https://uv6glzpmwjblxalwde3jj46n7q.appsync-api.eu-west-2.amazonaws.com/graphql",
+        "GraphQLAPIKeyOutput": "da2-hq2fqftahbaalaqljbmyi5eg4q"
+      },
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-ltedashcam-dev-b82f1-deployment/amplify-cfn-templates/api/cloudformation-template.json",
+        "logicalId": "apiltedashcam"
+      },
+      "lastPushTimeStamp": "2024-11-04T14:51:45.839Z",
+      "lastPushDirHash": "c/aRFYewK2cNGkfXD/1YMtYEL14="
+    }
+  }
+}

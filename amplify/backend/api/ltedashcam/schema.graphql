@@ -1,0 +1,16 @@
+# This "input" configures a global authorization rule to enable public access to
+# all models in this schema. Learn more about authorization rules here: https://docs.amplify.aws/cli/graphql/authorization-rules
+input AMPLIFY { globalAuthRule: AuthRule = { allow: public } } # FOR TESTING ONLY!
+
+type demoTable @model {
+  id: ID!
+  video_file_name: String!
+  dashcam_name: String
+  file_location: String
+  number_plate: String
+  latitude: Float
+  longitude: Float
+  postcode: String
+  video_start_time: String
+  video_end_time: String
+}

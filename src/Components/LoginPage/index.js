@@ -1,70 +1,54 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../Hooks/AuthContext'; 
-import Header from '../../Header';
-import './Login.css';
+  // Login.js
+  import React from 'react';
+  import { useNavigate } from 'react-router-dom';
+  import { Authenticator, View,Image,Text, useTheme } from '@aws-amplify/ui-react';
+  import '@aws-amplify/ui-react/styles.css';
+  import './Login.css';
+  import Header from '../../Header';
 
-const Login = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const { signIn } = useAuth();  
-  const navigate = useNavigate();
+  const Login = () => {
+    const navigate = useNavigate();
 
-  const handleLogin = async () => {
-    try {
-      await signIn(username, password);
+    const handleSignIn = () => {
       navigate('/Dashboard');
-    } catch (error) {
-      console.error('Login failed', error);
-      alert('Login failed. Please check your credentials.');
-    }
+    };
+
+    const components = {
+      SignIn: {
+        Header() {
+          const { tokens } = useTheme();
+          return (
+            <View textAlign="center" padding={tokens.space.large}>
+              <Image
+                alt="Police Department Logo"
+                src="https://docs.amplify.aws/assets/logo-dark.svg"
+                style={{ width: '100px', marginBottom: tokens.space.large }}
+              />
+              <Text fontSize="large" fontWeight="bold" color={tokens.colors.font.primary}>
+                Police Login Portal
+              </Text>
+            </View>
+          );
+        },
+      },
+    };
+  
+
+    return (
+      <div className="login-page">
+        <Authenticator 
+        components={components}
+        hideSignUp={true}
+        initialState="signIn" 
+        onSignIn={handleSignIn} 
+        >
+          {() => (
+            <main className="login-container">
+            </main>
+          )}
+        </Authenticator>
+      </div>
+    );
   };
 
-  return (
-    <div className="login-page">
-      <Header />
-      <div className="login-container">
-        <div className="left-side">
-          {/* Add your image here */}
-          <div className="curved-side">
-            <img src="/images/Police.png" alt="Police" className="police-image" />
-          </div>
-        </div>
-        <div className="right-side">
-          <div className='text-center mt-3'>
-            <h2 className="text-center text-black">Police Login</h2>
-          </div>
-          <div className="d-flex flex-column align-items-center mt-4">
-            <div className="login-form w-75">
-              <input 
-                type="text" 
-                id="username" 
-                name="username"
-                placeholder='Enter Username' 
-                className="form-control mb-3" 
-                value={username} 
-                onChange={e => setUsername(e.target.value)} 
-              />
-
-              <input 
-                type="password" 
-                id="password" 
-                name="password"
-                placeholder='Enter Password' 
-                className="form-control mb-3" 
-                value={password} 
-                onChange={e => setPassword(e.target.value)} 
-              />
-
-              <button className="btn btn-primary w-100" onClick={handleLogin}>Login</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-
-  );
-};
-
-export default Login;
+  export default Login;

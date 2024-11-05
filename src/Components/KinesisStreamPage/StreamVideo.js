@@ -6,6 +6,7 @@ import Header from '../../Header';
 import { useLocation } from 'react-router-dom';
 
 const StreamVideo = () => {
+  console.log('Streaming Video');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');

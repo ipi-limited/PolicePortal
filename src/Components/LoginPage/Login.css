@@ -1,92 +1,71 @@
-/* Overall login page container */
+/* Login.css */
+
 .login-page {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background-color: #f0f2f5;
-  }
-  
-  .login-container {
-    display: flex;
-    width: 80%;
-    height: 70vh;
-    background-color: #fff;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
-    overflow: hidden;
-    
-  }
-  
-  /* Left Side - Image and Curvy Side */
-  .left-side {
-    flex: 1;
-    position: relative;
-    background-color: #ff6a00; 
-    clip-path: ellipse(75% 100% at 25% 30%);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  
-  .curved-side {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-    width: 100%;
-  }
-  
-  .police-image {
-    width: 80%;
-    max-height: 80%;
-    object-fit: contain;
-  }
-  
-  /* Right Side - Login Form */
-  .right-side {
-    flex: 1;
-    padding: 40px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-  }
-  
-  h2 {
-    font-weight: 600;
-    color: #1d3557;
-  }
-  
-  /* Style the form */
-  .login-form {
-    width: 100%;
-  }
-  
-  .form-control {
-    border-radius: 5px;
-    padding: 10px;
-  }
-  
-  .btn {
-    background-color: #1e90ff;
-    border-color: #1e90ff;
-  }
-  @media (max-width: 768px) {
-    .login-container {
-      flex-direction: column;
-      width: 95%;
-    }
-  
-    .left-side {
-      clip-path: none;
-      height: 30%;
-    }
-  
-    .right-side {
-      height: 70%;
-      padding: 20px;
-    }
-  }
-    
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: #f5f5f5;
+}
+
+.login-container {
+  display: flex;
+  width: 100%;
+  max-width: 1200px;
+  margin: 20px auto;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.left-side {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #eee;
+}
+
+.curved-side {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #333;
+  border-radius: 0 50px 50px 0;
+}
+
+.police-image {
+  width: 80%;
+  object-fit: cover;
+  border-radius: 0 50px 50px 0;
+}
+
+.right-side {
+  flex: 1;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.custom-form-fields {
+  width: 75%;
+}
+
+.form-control {
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  border: none;
+  border-radius: 8px;
+}

@@ -1,0 +1,5 @@
+{
+  "AppSyncApiName": "ltedashcam",
+  "DynamoDBBillingMode": "PAY_PER_REQUEST",
+  "DynamoDBEnableServerSideEncryption": false
+}

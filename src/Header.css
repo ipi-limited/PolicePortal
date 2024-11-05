@@ -1,35 +1,53 @@
-
+/* Header.css */
 .App-header {
-    background-color: #343a40; 
-    padding: 20px 0; 
-    position: relative;
-  }
-  
-  .header-content {
-    margin-bottom: 10px; 
-  }
-  
-  .header-tabs {
-    display: flex; 
-    justify-content: center; 
-    padding: 0; 
-  }
-  
-  .header-tabs .nav-link {
-    font-weight: bold; 
-    color: white; 
-  }
-  
-  .header-tabs .nav-link:hover {
-    color: #f0f0f0; 
-  }
+  background-color: #343a40; 
+  position: relative;
+}
+
+.header-content {
+  margin-bottom: 1px;
+}
+
+.logo-and-heading {
+  display: flex;
+  align-items: center;
+  margin-right: 5px; 
+}
+
+.logo {
+  margin-top: -2px;
+  height: 80px;
+  margin-right: 540px; 
+}
+
+.header-title {
+  color: white;
+  font-size: 1.5rem; 
+}
+
+.header-tabs {
+  display: flex; 
+  justify-content: center; 
+  padding: 0; 
+}
+
+.header-tabs .nav-link {
+  font-weight: bold; 
+  color: white; 
+  font-size: 14px; 
+}
+
+.header-tabs .nav-link:hover {
+  color: #f0f0f0; 
+}
+
 
 .signout-icon {
   position: absolute;
   top: 10px;
-  right: 10px;
+  right: 20px;
   cursor: pointer;
-  color: #000;
+  color: #fff;
 }
 
 .signout-icon:hover {

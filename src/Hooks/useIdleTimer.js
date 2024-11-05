@@ -1,19 +1,22 @@
 import { useEffect } from 'react';
-import { useAuth } from './AuthContext'
+import { signOut } from 'aws-amplify/auth';
 import { useNavigate } from 'react-router-dom';
 
 const useIdleTimer = (timeoutDuration) => {
-  const { signOut } = useAuth();
   const navigate = useNavigate();
-  
+
   useEffect(() => {
     let timeoutId;
 
     const handleActivity = () => {
       if (timeoutId) clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => {
-        signOut();
-        navigate('/');
+      timeoutId = setTimeout(async () => {
+        try {
+          await signOut();
+          navigate('/'); 
+        } catch (error) {
+          console.error('Error signing out:', error);
+        }
       }, timeoutDuration);
     };
 
@@ -33,7 +36,7 @@ const useIdleTimer = (timeoutDuration) => {
       window.removeEventListener('scroll', handleActivity);
       window.removeEventListener('click', handleActivity);
     };
-  }, [signOut, timeoutDuration]);
+  }, [timeoutDuration, navigate]); 
 };
 
 export default useIdleTimer;

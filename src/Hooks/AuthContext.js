@@ -96,21 +96,21 @@ export const AuthProvider = ({ children }) => {
     });
   };
 
-  const signOut = () => {
-    if (user) {
-      user.signOut();
-      setUser(null);
-      setIdToken(null);
-      setIsAuthenticated(false);
+  // const signOut = () => {
+  //   if (user) {
+  //     user.signOut();
+  //     setUser(null);
+  //     setIdToken(null);
+  //     setIsAuthenticated(false);
       
-      // Clear sessionStorage
-      sessionStorage.removeItem('username');
-      sessionStorage.removeItem('idToken');
+  //     // Clear sessionStorage
+  //     sessionStorage.removeItem('username');
+  //     sessionStorage.removeItem('idToken');
   
-      AWS.config.credentials.clearCachedId();
-      console.log('User signed out');
-    }
-  };
+  //     AWS.config.credentials.clearCachedId();
+  //     console.log('User signed out');
+  //   }
+  // };
 
   useEffect(() => {
     const currentUser = userPool.getCurrentUser();
@@ -152,7 +152,7 @@ export const AuthProvider = ({ children }) => {
   
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, signIn, signOut, user, idToken, loading }}>
+    <AuthContext.Provider value={{ isAuthenticated, signIn, user, idToken, loading }}>
       {children}
     </AuthContext.Provider>
   );
