@@ -29,8 +29,8 @@
           "partitionKeyName": "video_file_name",
           "partitionKeyType": "S"
         },
-        "ltedashcame92c72bd": {
-          "bucketName": "test-bucket-rach",
+        "ltedashcam8d3dccbd": {
+          "bucketName": "customer-dashcam-videos",
           "region": "eu-west-2"
         }
       },

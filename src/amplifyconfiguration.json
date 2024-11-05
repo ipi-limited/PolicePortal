@@ -28,7 +28,7 @@
       "region": "eu-west-2"
     }
   ],
-  "aws_user_files_s3_bucket": "test-bucket-rach",
+  "aws_user_files_s3_bucket": "customer-dashcam-videos",
   "aws_user_files_s3_bucket_region": "eu-west-2",
   "aws_appsync_graphqlEndpoint": "https://uv6glzpmwjblxalwde3jj46n7q.appsync-api.eu-west-2.amazonaws.com/graphql",
   "aws_appsync_region": "eu-west-2",

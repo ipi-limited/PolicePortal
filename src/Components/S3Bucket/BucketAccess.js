@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { list } from 'aws-amplify/storage';
+import { list, getProperties } from 'aws-amplify/storage';
 import { useAuthenticator } from '@aws-amplify/ui-react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Header from '../../Header';
@@ -7,21 +7,19 @@ import { useNavigate } from 'react-router-dom';
 import { FaFileVideo, FaFileAlt } from 'react-icons/fa';
 
 const BucketAccess = () => {
-  console.log('Bucket Access..!');
     const [s3Data, setS3Data] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const navigate = useNavigate();
-    const dashcamName = 'dashcam0058';
+    const dashcamName = 'dashcam0058/';
 
     const { user } = useAuthenticator((context) => [context.user]);
     const identityId = user.userId;
 
     useEffect(() => {
-      console.log('Fetch S3')
         const fetchS3Data = async () => {
             try {
                 const result = await list({
-                    path: () => `public/testfile.txt`,                
+                    path: () => dashcamName,                
                   });                
                 const items = result?.items || [];
                 setS3Data(items);
@@ -39,15 +37,17 @@ const BucketAccess = () => {
 
     const handleVideoClick = async (videoKey) => {
         try {
-            const videoUrl = await Storage.get(videoKey, { level: 'public' });
-            navigate('/VideoPlayer', { state: { videoUrl } });
-        } catch (error) {
-            console.error('Error retrieving video URL:', error);
-            alert('Failed to retrieve video');
-        }
+            const result = await getProperties({
+              path: videoKey,
+            });
+            console.log('File Properties ', result);
+          } catch (error) {
+            console.log('Error ', error);
+          }
+          
     };
     return (
-        <div>
+<div>
             <Header />
             <div className="container mt-4">
                 <h2 className="text-center">DashCam Records</h2>
@@ -57,42 +57,50 @@ const BucketAccess = () => {
                     <div className="text-center mt-4">No records found.</div>
                 ) : (
                     <div className="row">
-                        {s3Data.map(item => (
-                            <div key={item.key} className="col-md-6 mb-4">
-                                <div className="card shadow-sm h-100">
-                                    <div className="card-body d-flex align-items-center">
-                                        {item.key.endsWith('.mp4') ? (
-                                            <FaFileVideo className="me-3 text-primary" size={24} />
-                                        ) : (
-                                            <FaFileAlt className="me-3 text-secondary" size={24} />
-                                        )}
-                                        <div className="flex-grow-1">
-                                            {item.key.endsWith('.mp4') ? (
-                                                <button
-                                                    onClick={() => handleVideoClick(item.key)}
-                                                    className="btn btn-link p-0 text-dark"
-                                                    style={{
-                                                        textDecoration: 'none',
-                                                        background: 'none',
-                                                        whiteSpace: 'nowrap',
-                                                        textOverflow: 'ellipsis',
-                                                        cursor: 'pointer',
-                                                    }}
-                                                >
-                                                    {item.key}
-                                                </button>
+                        {s3Data.map(item => {
+                            if (!item || !item.path) {
+                                console.warn('Item without path:', item);
+                                return null; 
+                            }
+
+                            return (
+                                <div key={item.path} className="col-md-6 mb-4">
+                                    <div className="card shadow-sm h-100">
+                                        <div className="card-body d-flex align-items-center">
+                                            {item.path.endsWith('.mp4') ? (
+                                                <FaFileVideo className="me-3 text-primary" size={24} />
                                             ) : (
-                                                <span>{item.key}</span>
+                                                <FaFileAlt className="me-3 text-secondary" size={24} />
                                             )}
+                                            <div className="flex-grow-1">
+                                                {item.path.endsWith('.mp4') ? (
+                                                    <button
+                                                        onClick={() => handleVideoClick(item.path)}
+                                                        className="btn btn-link p-0 text-dark"
+                                                        style={{
+                                                            textDecoration: 'none',
+                                                            background: 'none',
+                                                            whiteSpace: 'wrap',
+                                                            textOverflow: 'ellipsis',
+                                                            cursor: 'pointer',
+                                                        }}
+                                                    >
+                                                        {item.path}
+                                                    </button>
+                                                ) : (
+                                                    <span>{item.path}</span>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 )}
             </div>
         </div>
+
     );
 };
 

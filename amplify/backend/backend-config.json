@@ -107,19 +107,19 @@
         }
       ]
     },
-    "AMPLIFY_storage_ltedashcame92c72bd_bucketName": {
+    "AMPLIFY_storage_ltedashcam8d3dccbd_bucketName": {
       "usedBy": [
         {
           "category": "storage",
-          "resourceName": "ltedashcame92c72bd"
+          "resourceName": "ltedashcam8d3dccbd"
         }
       ]
     },
-    "AMPLIFY_storage_ltedashcame92c72bd_region": {
+    "AMPLIFY_storage_ltedashcam8d3dccbd_region": {
       "usedBy": [
         {
           "category": "storage",
-          "resourceName": "ltedashcame92c72bd"
+          "resourceName": "ltedashcam8d3dccbd"
         }
       ]
     }
@@ -131,7 +131,7 @@
       "service": "DynamoDB",
       "serviceType": "imported"
     },
-    "ltedashcame92c72bd": {
+    "ltedashcam8d3dccbd": {
       "dependsOn": [],
       "providerPlugin": "awscloudformation",
       "service": "S3",

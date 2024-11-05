@@ -45,7 +45,7 @@
         "IdentityPoolName": "ltedashcam95e2ca98_identitypool_95e2ca98__dev",
         "UserPoolName": "ltedashcam95e2ca98_userpool_95e2ca98"
       },
-      "lastPushTimeStamp": "2024-11-04T14:51:44.768Z",
+      "lastPushTimeStamp": "2024-11-05T11:21:34.227Z",
       "providerMetadata": {
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-ltedashcam-dev-b82f1-deployment/amplify-cfn-templates/auth/ltedashcam95e2ca98-cloudformation-template.json",
         "logicalId": "authltedashcam95e2ca98"
@@ -64,7 +64,7 @@
         "Name": "S3Trigger4bf95ce9-dev",
         "LambdaExecutionRole": "S3Trigger4bf95ce9LambdaRole4bf95ce9-dev"
       },
-      "lastPushTimeStamp": "2024-11-04T14:51:44.772Z",
+      "lastPushTimeStamp": "2024-11-05T11:21:34.229Z",
       "providerMetadata": {
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-ltedashcam-dev-b82f1-deployment/amplify-cfn-templates/function/S3Trigger4bf95ce9-cloudformation-template.json",
         "logicalId": "functionS3Trigger4bf95ce9"
@@ -90,16 +90,16 @@
       },
       "lastPushTimeStamp": "2024-11-04T10:49:48.692Z"
     },
-    "ltedashcame92c72bd": {
+    "ltedashcam8d3dccbd": {
       "service": "S3",
       "serviceType": "imported",
       "providerPlugin": "awscloudformation",
       "dependsOn": [],
       "output": {
-        "BucketName": "test-bucket-rach",
+        "BucketName": "customer-dashcam-videos",
         "Region": "eu-west-2"
       },
-      "lastPushTimeStamp": "2024-11-04T12:08:08.866Z"
+      "lastPushTimeStamp": "2024-11-05T11:21:23.891Z"
     }
   },
   "api": {
@@ -125,7 +125,7 @@
         "s3TemplateURL": "https://s3.amazonaws.com/amplify-ltedashcam-dev-b82f1-deployment/amplify-cfn-templates/api/cloudformation-template.json",
         "logicalId": "apiltedashcam"
       },
-      "lastPushTimeStamp": "2024-11-04T14:51:45.839Z",
+      "lastPushTimeStamp": "2024-11-05T11:21:34.229Z",
       "lastPushDirHash": "c/aRFYewK2cNGkfXD/1YMtYEL14="
     }
   }
