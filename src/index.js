@@ -11,10 +11,22 @@ import {generateClient} from 'aws-amplify/api'
 import { ApolloProvider } from '@apollo/client';
 import apolloClient from './client'
 
-Amplify.configure(awsExports);
+Amplify.configure({
+  ... awsExports,
+  Analytics: {
+    Kinesis: {
+      region: 'eu-west-2', 
+      bufferSize: 1000, 
+      flushSize: 100, 
+      flushInterval: 5000,
+      resendLimit: 5
+    }
+  }
+});
+
+
 const AuthenticatedApp = withAuthenticator(AppRoutes); 
 const client = generateClient();
-
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
 root.render(

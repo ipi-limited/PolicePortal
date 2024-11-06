@@ -5,73 +5,43 @@
     import { CognitoUserPool, AuthenticationDetails, CognitoUser } from 'amazon-cognito-identity-js';
     import { FaUpload } from 'react-icons/fa';
     import MapTraces from '../../Hooks/MapTraces';
-    import {gql , useQuery} from '@apollo/client';
+    import { record } from 'aws-amplify/analytics/kinesis';
 
     const poolData = {
         UserPoolId: 'eu-west-2_9hCbrQq4P',
         ClientId: '47ko5gjvt7h5l64c6ej3a22shj',
     };
-    
-    const userPool = new CognitoUserPool(poolData);
-    
-    
-        const GET_RECORDS = gql`
-            query GetRecords {
-            getRecords {
-            video_file_name
-            dashcam_name
-            file_location
-            number_plate
-            latitude
-            longitude
-            postcode
-            video_start_time
-            video_end_time
-            }
-            }
-        `;
 
+    const userPool = new CognitoUserPool(poolData);
 
     const DbTable = () => {
-        const [searchParams, setSearchParams] = useState({
-            postcode: '',
-            numberPlate:'',
-            latitude: '',
-            longitude: '',
-            startTime: '',
-            endTime: '',
-            radius: '',
-        });
+        // const [searchParams, setSearchParams] = useState({
+        //     postcode: '',
+        //     numberPlate:'',
+        //     latitude: '',
+        //     longitude: '',
+        //     startTime: '',
+        //     endTime: '',
+        //     radius: '',
+        // });
 
-        const [records, setRecords] = useState([]);
-        const [filteredRecords, setFilteredRecords] = useState([]);
-        const [username, setUsername] = useState('');
-        const [password, setPassword] = useState('');
-        const [boundingCoords, setBoundingCoords] = useState({
-            latitude_min: null,
-            latitude_max: null,
-            longitude_min: null,
-            longitude_max: null,
-        });
-        const [isMapRender, setIsMapRender] = useState(false);
-        const [selectedRecords, setSelectedRecords] = useState(new Set()); 
-        const [mapCoordinates, setMapCoordinates] = useState([]);
+        // const [records, setRecords] = useState([]);
+        // const [filteredRecords, setFilteredRecords] = useState([]); 
+        // const [loading, setLoading] = useState(true);
+        // const [username, setUsername] = useState('');
+        // const [password, setPassword] = useState('');
+        // const [boundingCoords, setBoundingCoords] = useState({
+        //     latitude_min: null,
+        //     latitude_max: null,
+        //     longitude_min: null,
+        //     longitude_max: null,
+        // });
+        // const [isMapRender, setIsMapRender] = useState(false);
+        // const [selectedRecords, setSelectedRecords] = useState(new Set()); 
+        // const [mapCoordinates, setMapCoordinates] = useState([]);
 
-        const mapRef = useRef(null);  
+        // const mapRef = useRef(null);  
 
-        const { loading, error, data } = useQuery(GET_RECORDS);
-
-        useEffect(() => {
-            if (error) {
-                console.error('GraphQL Error:', error);
-                alert(`Error fetching records: ${error.message}`);
-            } else if (data) {
-                setFilteredRecords(data.getRecords || []);
-                console.log('Fetched Records from GraphQL:', data.getRecords);
-            }
-        }, [data, error]);
-        
-    
         // useLayoutEffect(() => {
         //     if (mapCoordinates.length > 0 && mapRef.current) {
         //         mapRef.current.scrollIntoView({ behavior: 'smooth' });
@@ -143,7 +113,7 @@
         //             console.error('Error fetching records from DynamoDB:', error);
         //             alert(`Error fetching records: ${error.message}`);
         //         } finally {
-        //             // setLoading(false);
+        //             setLoading(false);
         //         }
         //     };
     
@@ -374,146 +344,147 @@
         // console.log('Map ',mapCoordinates);
         return (
             <div></div>
-        //     <div>
-        //     <Header />
-        //     <div className="container-fluid mt-2" style={{ paddingLeft: '30px', paddingRight: '30px' }}>
-        //         <h2 className="text-center">Search Records</h2>
-        //         <div style={{ margin: '5px', display: 'flex', justifyContent: 'space-between', gap:'5px' }}>
-        //         <input
-        //             type="text"
-        //             name="postcode"
-        //             placeholder="Postcode"
-        //             value={searchParams.postcode}
-        //             onChange={handleInputChange}
-        //         />
-        //         <input
-        //             type="text"
-        //             name="numberPlate"
-        //             placeholder="Number Plate"
-        //             value={searchParams.numberPlate}
-        //             onChange={handleInputChange}
-        //         />
-        //         <input
-        //             type="text"
-        //             name="latitude"
-        //             placeholder="Latitude"
-        //             value={searchParams.latitude}
-        //             onChange={handleInputChange}
-        //             onPaste={(e) => {
-        //                 const pastedData = e.clipboardData.getData('Text');
-        //                 const [lat, long] = pastedData.split(',').map(coord => coord.trim());
-        //                 setSearchParams((prevParams) => ({
-        //                     ...prevParams,
-        //                     latitude: lat,
-        //                     longitude: long 
-        //                 }));
-        //                 e.preventDefault(); 
-        //             }}
+            // <div>
+            
+            // <Header />
+            // <div className="container-fluid mt-2" style={{ paddingLeft: '30px', paddingRight: '30px' }}>
+            //     <h2 className="text-center">Search Records</h2>
+            //     <div style={{ margin: '5px', display: 'flex', justifyContent: 'space-between', gap:'5px' }}>
+            //     <input
+            //         type="text"
+            //         name="postcode"
+            //         placeholder="Postcode"
+            //         value={searchParams.postcode}
+            //         onChange={handleInputChange}
+            //     />
+            //     <input
+            //         type="text"
+            //         name="numberPlate"
+            //         placeholder="Number Plate"
+            //         value={searchParams.numberPlate}
+            //         onChange={handleInputChange}
+            //     />
+            //     <input
+            //         type="text"
+            //         name="latitude"
+            //         placeholder="Latitude"
+            //         value={searchParams.latitude}
+            //         onChange={handleInputChange}
+            //         onPaste={(e) => {
+            //             const pastedData = e.clipboardData.getData('Text');
+            //             const [lat, long] = pastedData.split(',').map(coord => coord.trim());
+            //             setSearchParams((prevParams) => ({
+            //                 ...prevParams,
+            //                 latitude: lat,
+            //                 longitude: long 
+            //             }));
+            //             e.preventDefault(); 
+            //         }}
                 
-        //         />
-        //         <input
-        //             type="text"
-        //             name="longitude"
-        //             placeholder="Longitude"
-        //             value={searchParams.longitude}
-        //             onChange={handleInputChange}
-        //         />
-        //         <select
-        //       name="radius"
-        //       value={searchParams.radius}
-        //       onChange={handleInputChange}
-        //     >
-        //       {Array.from({ length: 10 }, (_, i) => i + 1).map((radiusValue) => (
-        //         <option key={radiusValue} value={radiusValue}>
-        //           {radiusValue} mile{radiusValue > 1 ? 's' : ''}
-        //         </option>
-        //       ))}
-        //     </select>
-        //         <input
-        //             type="datetime-local"
-        //             name="startTime"
-        //             placeholder="Start Time"
-        //             value={searchParams.startTime}
-        //             onChange={handleInputChange}
-        //         />
-        //         <input
-        //             type="datetime-local"
-        //             name="endTime"
-        //             placeholder="End Time"
-        //             value={searchParams.endTime}
-        //             onChange={handleInputChange}
-        //         />
-        //         <Button className="btn btn-primary" onClick={handleSearch}>
-        //             Search
-        //         </Button>
-        //         </div>
-        //         <div className='text-center mt-2'>
-        //         {selectedRecords.size > 0 && (
-        //             <Button onClick={handleShowMap} className="btn btn-secondary">
-        //                 Show on Map
-        //             </Button>
-        //             )}
-        //         </div>
-        //         {loading ? (
-        //         <p>Loading...</p>
-        //         ) : (
-        //         <table className="table">
-        //             <thead>
-        //             <tr>
-        //                 <th>Select</th>
-        //                 <th style={{ wordWrap: 'break-word', maxWidth: '150px' }}>Video File Name</th>
-        //                 <th style={{ wordWrap: 'break-word', maxWidth: '150px' }}>Dashcam Name</th>
-        //                 <th style={{ wordWrap: 'break-word', maxWidth: '150px' }}>File Location</th>
-        //                 <th style={{ wordWrap: 'break-word', maxWidth: '150px' }}>Number Plate</th>
-        //                 <th style={{ wordWrap: 'break-word', maxWidth: '150px' }}>Latitude</th>
-        //                 <th style={{ wordWrap: 'break-word', maxWidth: '150px' }}>Longitude</th>
-        //                 <th style={{ wordWrap: 'break-word', maxWidth: '150px' }}>Postcode</th>
-        //                 <th style={{ wordWrap: 'break-word', maxWidth: '150px' }}>Video Start Time</th>
-        //                 <th style={{ wordWrap: 'break-word', maxWidth: '150px' }}>Video End Time</th>
-        //                 <th style={{ wordWrap: 'break-word', maxWidth: '150px' }}>Video Upload</th>
-        //             </tr>
-        //             </thead>
-        //             <tbody>
-        //             {filteredRecords.length > 0 ? (
-        //                 filteredRecords.map((record, index) => (
-        //                 <tr key={index}>
-        //                      <td>
-        //                         <input 
-        //                         type="checkbox" 
-        //                         style={{ width: '20px', height: '20px', marginTop:'20px' }} 
-        //                         checked={selectedRecords.has(record)} 
-        //                         onChange={() => handleCheckboxChange(record)} 
-        //                         />
-        //                     </td>
-        //                     <td style={{ wordWrap: 'break-word', maxWidth: '150px' }}>{record.video_file_name}</td>
-        //                     <td style={{ wordWrap: 'break-word', maxWidth: '150px' }}>{record.dashcam_name}</td>
-        //                     <td style={{ wordWrap: 'break-word', maxWidth: '150px' }}>{record.file_location}</td>
-        //                     <td style={{ wordWrap: 'break-word', maxWidth: '150px' }}>{record.number_plate}</td>
-        //                     <td style={{ wordWrap: 'break-word', maxWidth: '150px' }}>{record.latitude}</td>
-        //                     <td style={{ wordWrap: 'break-word', maxWidth: '150px' }}>{record.longitude}</td>
-        //                     <td style={{ wordWrap: 'break-word', maxWidth: '150px' }}>{record.postcode}</td>
-        //                     <td style={{ wordWrap: 'break-word', maxWidth: '150px' }}>{record.video_start_time}</td>
-        //                     <td style={{ wordWrap: 'break-word', maxWidth: '150px' }}>{record.video_end_time}</td>
-        //                     <td  style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-        //                         <FaUpload 
-        //                         onClick={() => handleFileChange(record)}
-        //                         style={{ cursor: 'pointer' }}
-        //                         />
-        //                     </td>
-        //                 </tr>
-        //                 ))
-        //             ) : (
-        //                 <tr>
-        //                 <td colSpan="9">No records found</td>
-        //                 </tr>
-        //             )}
-        //             </tbody>
-        //         </table>
-        //         )}
-        //     </div>
-        //     {mapCoordinates.length > 0 && <MapTraces ref={mapRef} Coordinates={mapCoordinates} />}
-        //     </div>
-         );
+            //     />
+            //     <input
+            //         type="text"
+            //         name="longitude"
+            //         placeholder="Longitude"
+            //         value={searchParams.longitude}
+            //         onChange={handleInputChange}
+            //     />
+            //     <select
+            //   name="radius"
+            //   value={searchParams.radius}
+            //   onChange={handleInputChange}
+            // >
+            //   {Array.from({ length: 10 }, (_, i) => i + 1).map((radiusValue) => (
+            //     <option key={radiusValue} value={radiusValue}>
+            //       {radiusValue} mile{radiusValue > 1 ? 's' : ''}
+            //     </option>
+            //   ))}
+            // </select>
+            //     <input
+            //         type="datetime-local"
+            //         name="startTime"
+            //         placeholder="Start Time"
+            //         value={searchParams.startTime}
+            //         onChange={handleInputChange}
+            //     />
+            //     <input
+            //         type="datetime-local"
+            //         name="endTime"
+            //         placeholder="End Time"
+            //         value={searchParams.endTime}
+            //         onChange={handleInputChange}
+            //     />
+            //     <Button className="btn btn-primary" onClick={handleSearch}>
+            //         Search
+            //     </Button>
+            //     </div>
+            //     <div className='text-center mt-2'>
+            //     {selectedRecords.size > 0 && (
+            //         <Button onClick={handleShowMap} className="btn btn-secondary">
+            //             Show on Map
+            //         </Button>
+            //         )}
+            //     </div>
+            //     {loading ? (
+            //     <p>Loading...</p>
+            //     ) : (
+            //     <table className="table">
+            //         <thead>
+            //         <tr>
+            //             <th>Select</th>
+            //             <th style={{ wordWrap: 'break-word', maxWidth: '150px' }}>Video File Name</th>
+            //             <th style={{ wordWrap: 'break-word', maxWidth: '150px' }}>Dashcam Name</th>
+            //             <th style={{ wordWrap: 'break-word', maxWidth: '150px' }}>File Location</th>
+            //             <th style={{ wordWrap: 'break-word', maxWidth: '150px' }}>Number Plate</th>
+            //             <th style={{ wordWrap: 'break-word', maxWidth: '150px' }}>Latitude</th>
+            //             <th style={{ wordWrap: 'break-word', maxWidth: '150px' }}>Longitude</th>
+            //             <th style={{ wordWrap: 'break-word', maxWidth: '150px' }}>Postcode</th>
+            //             <th style={{ wordWrap: 'break-word', maxWidth: '150px' }}>Video Start Time</th>
+            //             <th style={{ wordWrap: 'break-word', maxWidth: '150px' }}>Video End Time</th>
+            //             <th style={{ wordWrap: 'break-word', maxWidth: '150px' }}>Video Upload</th>
+            //         </tr>
+            //         </thead>
+            //         <tbody>
+            //         {filteredRecords.length > 0 ? (
+            //             filteredRecords.map((record, index) => (
+            //             <tr key={index}>
+            //                  <td>
+            //                     <input 
+            //                     type="checkbox" 
+            //                     style={{ width: '20px', height: '20px', marginTop:'20px' }} 
+            //                     checked={selectedRecords.has(record)} 
+            //                     onChange={() => handleCheckboxChange(record)} 
+            //                     />
+            //                 </td>
+            //                 <td style={{ wordWrap: 'break-word', maxWidth: '150px' }}>{record.video_file_name}</td>
+            //                 <td style={{ wordWrap: 'break-word', maxWidth: '150px' }}>{record.dashcam_name}</td>
+            //                 <td style={{ wordWrap: 'break-word', maxWidth: '150px' }}>{record.file_location}</td>
+            //                 <td style={{ wordWrap: 'break-word', maxWidth: '150px' }}>{record.number_plate}</td>
+            //                 <td style={{ wordWrap: 'break-word', maxWidth: '150px' }}>{record.latitude}</td>
+            //                 <td style={{ wordWrap: 'break-word', maxWidth: '150px' }}>{record.longitude}</td>
+            //                 <td style={{ wordWrap: 'break-word', maxWidth: '150px' }}>{record.postcode}</td>
+            //                 <td style={{ wordWrap: 'break-word', maxWidth: '150px' }}>{record.video_start_time}</td>
+            //                 <td style={{ wordWrap: 'break-word', maxWidth: '150px' }}>{record.video_end_time}</td>
+            //                 <td  style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+            //                     <FaUpload 
+            //                     onClick={() => handleFileChange(record)}
+            //                     style={{ cursor: 'pointer' }}
+            //                     />
+            //                 </td>
+            //             </tr>
+            //             ))
+            //         ) : (
+            //             <tr>
+            //             <td colSpan="9">No records found</td>
+            //             </tr>
+            //         )}
+            //         </tbody>
+            //     </table>
+            //     )}
+            // </div>
+            // {mapCoordinates.length > 0 && <MapTraces ref={mapRef} Coordinates={mapCoordinates} />}
+            // </div>
+        )
         };
 
 

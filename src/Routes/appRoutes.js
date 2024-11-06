@@ -13,7 +13,7 @@ import { useAuthenticator } from '@aws-amplify/ui-react';
 
 const AppRoutes = () => {
     const { user } = useAuthenticator((context) => [context.user]);
-    console.log('user',user)
+    // console.log('user',user)
     useIdleTimer(5 * 60 * 1000); 
 
     return (
