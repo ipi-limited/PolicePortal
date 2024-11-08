@@ -4,12 +4,12 @@ import './index.css';
 import AppRoutes from './Routes/appRoutes';
 import { BrowserRouter } from 'react-router-dom'; 
 import reportWebVitals from './reportWebVitals';
-import { withAuthenticator } from '@aws-amplify/ui-react';
 import { Amplify } from 'aws-amplify';
 import awsExports from './aws-exports'
-import {generateClient} from 'aws-amplify/api'
-import { ApolloProvider } from '@apollo/client';
+import '@aws-amplify/ui-react/styles.css';
 import apolloClient from './client'
+import {generateClient } from 'aws-amplify/api'
+import {ApolloProvider} from '@apollo/client'
 
 Amplify.configure({
   ... awsExports,
@@ -24,16 +24,15 @@ Amplify.configure({
   }
 });
 
-
-const AuthenticatedApp = withAuthenticator(AppRoutes); 
 const client = generateClient();
 const root = ReactDOM.createRoot(document.getElementById('root'));
+
 
 root.render(
   <ApolloProvider client={apolloClient}>
   <React.StrictMode>
       <BrowserRouter>
-      <AuthenticatedApp />
+      <AppRoutes />
       </BrowserRouter>
   </React.StrictMode>
   </ApolloProvider>

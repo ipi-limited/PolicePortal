@@ -69,3 +69,26 @@
   border: none;
   border-radius: 8px;
 }
+/* Login.css or directly in your component file using <style> tag */
+
+[data-amplify-authenticator] {
+  --amplify-components-authenticator-router-box-shadow: 0 0 16px var(--amplify-colors-overlay-10);
+  --amplify-components-authenticator-router-border-width: 0;
+  --amplify-components-authenticator-form-padding: var(--amplify-space-medium) var(--amplify-space-xl) var(--amplify-space-xl);
+  
+  /* Primary button background and text color */
+  --amplify-components-button-primary-background-color: #f47521; /* Custom primary background color */
+  --amplify-components-button-primary-color: #ffffff; /* Button text color */
+
+  /* Additional styles for hover and focus states */
+  --amplify-components-button-primary-hover-background-color: #e6641f; /* Hover state color */
+  --amplify-components-button-primary-active-background-color: #cc581c; /* Active state color */
+
+  /* Additional color adjustments */
+  --amplify-components-fieldcontrol-focus-box-shadow: 0 0 0 2px var(--amplify-colors-orange-60);
+  --amplify-components-tabs-item-active-border-color: var(--amplify-colors-neutral-100);
+  --amplify-components-tabs-item-color: var(--amplify-colors-neutral-80);
+  --amplify-components-tabs-item-active-color: var(--amplify-colors-orange-100);
+  --amplify-components-button-link-color: var(--amplify-colors-red-80);
+}
+

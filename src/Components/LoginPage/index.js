@@ -5,7 +5,7 @@
   import '@aws-amplify/ui-react/styles.css';
   import './Login.css';
   import Header from '../../Header';
-
+  
   const Login = () => {
     const navigate = useNavigate();
 
@@ -13,26 +13,46 @@
       navigate('/Dashboard');
     };
 
+    async function signIn({ username, password }) {
+      try {
+        const { isSignedIn, nextStep } = await signIn({ username, password });
+      } catch (error) {
+        console.log('error signing in', error);
+      }
+    }
+
+    
     const components = {
       SignIn: {
         Header() {
           const { tokens } = useTheme();
           return (
-            <View textAlign="center" padding={tokens.space.large}>
+            <View>
+             <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent:'center' }}>
               <Image
-                alt="Police Department Logo"
-                src="https://docs.amplify.aws/assets/logo-dark.svg"
-                style={{ width: '100px', marginBottom: tokens.space.large }}
+                alt="Road Angel Logo"
+                src={`${process.env.PUBLIC_URL}/Images/roadAngel.png`}
+                style={{ width: '100px'}}
               />
+              <Image
+                alt="Road Angel Name Logo"
+                src={`${process.env.PUBLIC_URL}/Images/roadangelname.png`}
+                style={{ width: '150px' }}
+              />
+            </View>
+            <View textAlign="center">      
               <Text fontSize="large" fontWeight="bold" color={tokens.colors.font.primary}>
                 Police Login Portal
               </Text>
             </View>
+          </View>
+
           );
         },
       },
     };
-  
+    
+    
 
     return (
       <div className="login-page">
