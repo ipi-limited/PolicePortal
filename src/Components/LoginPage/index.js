@@ -30,12 +30,12 @@
              <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent:'center' }}>
               <Image
                 alt="Road Angel Logo"
-                src={`${process.env.PUBLIC_URL}/Images/roadAngel.png`}
+                src={`/Images/roadAngel.png`}
                 style={{ width: '100px'}}
               />
               <Image
                 alt="Road Angel Name Logo"
-                src={`${process.env.PUBLIC_URL}/Images/roadangelname.png`}
+                src={`/Images/roadangelname.png`}
                 style={{ width: '150px' }}
               />
             </View>
