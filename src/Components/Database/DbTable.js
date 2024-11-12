@@ -1,13 +1,10 @@
     import React, { useState, useEffect, useCallback, useRef, useLayoutEffect } from 'react';
     import { Button } from 'react-bootstrap';
     import Header from '../../Header';
-    import AWS from 'aws-sdk';
-    import { CognitoUserPool, AuthenticationDetails, CognitoUser } from 'amazon-cognito-identity-js';
     import { FaUpload } from 'react-icons/fa';
     import MapTraces from '../../Hooks/MapTraces';
     import { generateClient } from 'aws-amplify/api';
     import { listDemoTables } from '../../graphql/queries'; 
-    import {createDemoTable} from '../../graphql/mutations';
  
     const DbTable = () => {
 
@@ -24,12 +21,6 @@
         const [records, setRecords] = useState([]);
         const [filteredRecords, setFilteredRecords] = useState([]); 
         const [loading, setLoading] = useState(true);
-        const [boundingCoords, setBoundingCoords] = useState({
-            latitude_min: null,
-            latitude_max: null,
-            longitude_min: null,
-            longitude_max: null,
-        });
         const [isMapRender, setIsMapRender] = useState(false);
         const [selectedRecords, setSelectedRecords] = useState(new Set()); 
         const [mapCoordinates, setMapCoordinates] = useState([]);
@@ -143,16 +134,15 @@
             });
         
             setFilteredRecords(filtered);
-            setSearchParams({
-                postcode: '',
-                numberPlate: '',
-                latitude: '',
-                longitude: '',
-                startTime: '',
-                endTime: '',
-                radius: '' ,
-            });
-        
+            // setSearchParams({
+            //     postcode: '',
+            //     numberPlate: '',
+            //     latitude: '',
+            //     longitude: '',
+            //     startTime: '',
+            //     endTime: '',
+            //     radius: '' ,
+            // });   
         };
 
 
@@ -226,12 +216,11 @@
                     }
                 }).filter(coord => coord !== null);
             
-                if (coordinates.length === 0) {
-                    console.warn('No valid coordinates selected.');
-                } else {
-                    setMapCoordinates(coordinates);
+                setMapCoordinates(coordinates);
+                if (mapRef.current) {
+                  mapRef.current.scrollIntoView({ behavior: 'smooth' });
                 }
-                console.log('Selected coordinates Roe Selection:', mapCoordinates);
+            
             };
             
             

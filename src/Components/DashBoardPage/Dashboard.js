@@ -2,6 +2,7 @@ import React from 'react';
 import { GoogleMap, useLoadScript, Marker } from '@react-google-maps/api';
 import Header from '../../Header'
 import useActiveDashcam from '../../Hooks/useActiveDashCam';
+import { useNavigate } from 'react-router-dom';
 
 const libraries = ['places'];
 const mapContainerStyle = {
@@ -12,9 +13,11 @@ const center = {
   lat: 52.9540,
   lng: -1.1550, 
 };
-const carMarkerIcon = '/Images/CarPin.png'
+const carMarkerIcon = 'static/images/CarPin.png'
 const Dashboard = () => {
   const { records, loading } = useActiveDashcam();
+  const navigate = useNavigate();
+
   
   console.log('Records from DB', records);
 
@@ -46,6 +49,10 @@ const Dashboard = () => {
       });
   };
 
+  const handleMarkerClick = (record) => {
+    navigate('/StreamVideo', { state: { record } });
+  };
+
 
   return (
     <div>
@@ -66,6 +73,7 @@ const Dashboard = () => {
                               url: carMarkerIcon,
                               scaledSize: new window.google.maps.Size(60, 60),
                           }}
+                          onClick={() => handleMarkerClick(record.dashcam_name)} 
                         />
                     ))}
       </GoogleMap>

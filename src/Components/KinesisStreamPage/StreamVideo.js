@@ -17,7 +17,8 @@ const StreamVideo = () => {
   const location = useLocation();
   let peerConnection;
   let signalingClient;
-
+  const dashCamName = location.state?.record; 
+  console.log('DashCam Name',dashCamName)
   const region = awsExports.aws_project_region;
 
   useEffect(() => {
@@ -109,7 +110,7 @@ const StreamVideo = () => {
 
               const describeSignalingChannelResponse = await kinesisVideoClient
                 .describeSignalingChannel({
-                  ChannelName: 'dashcam0058',
+                  ChannelName: dashCamName,
                 })
                 .promise();
 

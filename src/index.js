@@ -28,7 +28,6 @@ API: {
   }
 }
 
-
 });
 
 const client = generateClient();

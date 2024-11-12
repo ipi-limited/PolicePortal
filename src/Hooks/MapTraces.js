@@ -7,18 +7,20 @@ const mapContainerStyle = {
   height: '70vh',
 };
 
-const carMarkerIcon = '/Images/MapMarker.png'
+const carMarkerIcon = 'static/images/MapMarker.png'
+
+
   const MapTraces = forwardRef(({Coordinates},ref) => {
     console.log('Coords',Coordinates)
   const [renderMap, setRenderMap] = useState(false); 
 
-  useEffect(() => {
-    if (Coordinates.length > 0 && ref.current) {
-      console.log('enter into useeffect',Coordinates.length)
+  // useEffect(() => {
+  //   if (Coordinates.length > 0 && ref.current) {
+  //     console.log('enter into useeffect',Coordinates.length)
 
-      ref.current.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [Coordinates, ref.current]);
+  //     ref.current.scrollIntoView({ behavior: 'smooth' });
+  //   }
+  // }, [Coordinates, ref.current]);
 
   
   const center = {
@@ -59,8 +61,6 @@ const carMarkerIcon = '/Images/MapMarker.png'
                           }}
                         />
                     ))}
-                    <Marker position={{ lat: 52.92405, lng: -1.21598 }} title="Debug Marker" />
-
       </GoogleMap>
     </div>
   );
