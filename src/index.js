@@ -10,18 +10,16 @@ import '@aws-amplify/ui-react/styles.css';
 import apolloClient from './client'
 import {generateClient } from 'aws-amplify/api'
 import {ApolloProvider} from '@apollo/client'
+import { Authenticator } from '@aws-amplify/ui-react';
 
 Amplify.configure({
   ... awsExports,
-  Analytics: {
-    Kinesis: {
-      region: 'eu-west-2', 
-      bufferSize: 1000, 
-      flushSize: 100, 
-      flushInterval: 5000,
-      resendLimit: 5
-    }
-  }
+  Auth: {
+    mfaConfiguration: 'ON', 
+    mfaTypes: ['EMAIL'],
+    authenticationFlowType: 'USER_SRP_AUTH',
+}
+
 });
 
 const client = generateClient();
@@ -29,13 +27,13 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 
 
 root.render(
-  <ApolloProvider client={apolloClient}>
+  <Authenticator.Provider>
   <React.StrictMode>
       <BrowserRouter>
       <AppRoutes />
       </BrowserRouter>
   </React.StrictMode>
-  </ApolloProvider>
+  </Authenticator.Provider>
 );
 
 // If you want to start measuring performance in your app, pass a function

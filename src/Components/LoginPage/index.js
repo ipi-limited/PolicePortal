@@ -4,7 +4,6 @@
   import { Authenticator, View,Image,Text, useTheme } from '@aws-amplify/ui-react';
   import '@aws-amplify/ui-react/styles.css';
   import './Login.css';
-  import Header from '../../Header';
   
   const Login = () => {
     const navigate = useNavigate();
@@ -46,11 +45,15 @@
               </Text>
             </View>
           </View>
-
           );
         },
       },
-    };
+      ConfirmSignIn: {
+        Header() {
+            return <Text>Please enter the code sent to your email</Text>;
+        }
+    }
+  };
     
     
 

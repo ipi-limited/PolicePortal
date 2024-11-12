@@ -13,10 +13,10 @@ const awsmobile = {
     "aws_cognito_signup_attributes": [
         "EMAIL"
     ],
-    "aws_cognito_mfa_configuration": "OFF",
-    "aws_cognito_mfa_types": [
-        "SMS"
-    ],
+    "aws_cognito_mfa_configuration": "OPTIONAL",
+    "aws_cognito_mfa_types": ["EMAIL"],
+    "aws_cognito_verification_mechanisms": ["EMAIL"],
+
     "aws_cognito_password_protection_settings": {
         "passwordPolicyMinLength": 8,
         "passwordPolicyCharacters": []

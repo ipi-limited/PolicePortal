@@ -9,11 +9,11 @@ import Login from '../Components/LoginPage';
 import VideoPlayer from '../Components/S3Bucket/VideoPlayer';
 import DbTable from '../Components/Database/DbTable';
 import useIdleTimer  from '../Hooks/useIdleTimer';
-// import { useAuthenticator } from '@aws-amplify/ui-react';
+import { useAuthenticator } from '@aws-amplify/ui-react';
 
 const AppRoutes = () => {
-    const { user } = 'user1';
-    // console.log('user',user)
+    const { user } = useAuthenticator((context) => [context.user]);
+    console.log('user',user)
     useIdleTimer(5 * 60 * 1000); 
 
     return (
