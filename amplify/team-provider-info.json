@@ -33,9 +33,6 @@
           "bucketName": "customer-dashcam-videos",
           "region": "eu-west-2"
         }
-      },
-      "api": {
-        "ltedashcam": {}
       }
     }
   }

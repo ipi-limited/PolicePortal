@@ -2,67 +2,52 @@
 // this is an auto generated file. This will be overwritten
 
 export const createDemoTable = /* GraphQL */ `
-  mutation CreateDemoTable(
-    $input: CreateDemoTableInput!
-    $condition: ModelDemoTableConditionInput
-  ) {
-    createDemoTable(input: $input, condition: $condition) {
-      id
+  mutation CreateDemoTable($input: CreateDemoTableInput!) {
+    createDemoTable(input: $input) {
       video_file_name
       dashcam_name
       file_location
-      number_plate
+      ip_address
       latitude
       longitude
+      number_plate
       postcode
-      video_start_time
       video_end_time
-      createdAt
-      updatedAt
+      video_start_time
       __typename
     }
   }
 `;
 export const updateDemoTable = /* GraphQL */ `
-  mutation UpdateDemoTable(
-    $input: UpdateDemoTableInput!
-    $condition: ModelDemoTableConditionInput
-  ) {
-    updateDemoTable(input: $input, condition: $condition) {
-      id
+  mutation UpdateDemoTable($input: UpdateDemoTableInput!) {
+    updateDemoTable(input: $input) {
       video_file_name
       dashcam_name
       file_location
-      number_plate
+      ip_address
       latitude
       longitude
+      number_plate
       postcode
-      video_start_time
       video_end_time
-      createdAt
-      updatedAt
+      video_start_time
       __typename
     }
   }
 `;
 export const deleteDemoTable = /* GraphQL */ `
-  mutation DeleteDemoTable(
-    $input: DeleteDemoTableInput!
-    $condition: ModelDemoTableConditionInput
-  ) {
-    deleteDemoTable(input: $input, condition: $condition) {
-      id
+  mutation DeleteDemoTable($input: DeleteDemoTableInput!) {
+    deleteDemoTable(input: $input) {
       video_file_name
       dashcam_name
       file_location
-      number_plate
+      ip_address
       latitude
       longitude
+      number_plate
       postcode
-      video_start_time
       video_end_time
-      createdAt
-      updatedAt
+      video_start_time
       __typename
     }
   }

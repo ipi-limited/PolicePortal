@@ -3,63 +3,87 @@
 
 export const onCreateDemoTable = /* GraphQL */ `
   subscription OnCreateDemoTable(
-    $filter: ModelSubscriptionDemoTableFilterInput
+    $video_file_name: String
+    $dashcam_name: String
+    $file_location: String
+    $ip_address: String
+    $latitude: String
   ) {
-    onCreateDemoTable(filter: $filter) {
-      id
+    onCreateDemoTable(
+      video_file_name: $video_file_name
+      dashcam_name: $dashcam_name
+      file_location: $file_location
+      ip_address: $ip_address
+      latitude: $latitude
+    ) {
       video_file_name
       dashcam_name
       file_location
-      number_plate
+      ip_address
       latitude
       longitude
+      number_plate
       postcode
-      video_start_time
       video_end_time
-      createdAt
-      updatedAt
+      video_start_time
       __typename
     }
   }
 `;
 export const onUpdateDemoTable = /* GraphQL */ `
   subscription OnUpdateDemoTable(
-    $filter: ModelSubscriptionDemoTableFilterInput
+    $video_file_name: String
+    $dashcam_name: String
+    $file_location: String
+    $ip_address: String
+    $latitude: String
   ) {
-    onUpdateDemoTable(filter: $filter) {
-      id
+    onUpdateDemoTable(
+      video_file_name: $video_file_name
+      dashcam_name: $dashcam_name
+      file_location: $file_location
+      ip_address: $ip_address
+      latitude: $latitude
+    ) {
       video_file_name
       dashcam_name
       file_location
-      number_plate
+      ip_address
       latitude
       longitude
+      number_plate
       postcode
-      video_start_time
       video_end_time
-      createdAt
-      updatedAt
+      video_start_time
       __typename
     }
   }
 `;
 export const onDeleteDemoTable = /* GraphQL */ `
   subscription OnDeleteDemoTable(
-    $filter: ModelSubscriptionDemoTableFilterInput
+    $video_file_name: String
+    $dashcam_name: String
+    $file_location: String
+    $ip_address: String
+    $latitude: String
   ) {
-    onDeleteDemoTable(filter: $filter) {
-      id
+    onDeleteDemoTable(
+      video_file_name: $video_file_name
+      dashcam_name: $dashcam_name
+      file_location: $file_location
+      ip_address: $ip_address
+      latitude: $latitude
+    ) {
       video_file_name
       dashcam_name
       file_location
-      number_plate
+      ip_address
       latitude
       longitude
+      number_plate
       postcode
-      video_start_time
       video_end_time
-      createdAt
-      updatedAt
+      video_start_time
       __typename
     }
   }

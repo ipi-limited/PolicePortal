@@ -1,5 +1,5 @@
 projects:
-  ltedashcam:
+  demo-table-API:
     schemaPath: src/graphql/schema.json
     includes:
       - src/graphql/**/*.js
@@ -10,3 +10,9 @@ projects:
         codeGenTarget: javascript
         generatedFileName: ''
         docsFilePath: src/graphql
+        region: eu-west-2
+        apiId: ap3zul4nf5b6xcgz4lmbkur23a
+        maxDepth: 2
+extensions:
+  amplify:
+    version: 3

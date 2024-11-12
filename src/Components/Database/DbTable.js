@@ -5,15 +5,12 @@
     import { CognitoUserPool, AuthenticationDetails, CognitoUser } from 'amazon-cognito-identity-js';
     import { FaUpload } from 'react-icons/fa';
     import MapTraces from '../../Hooks/MapTraces';
-
-    const poolData = {
-        UserPoolId: 'eu-west-2_9hCbrQq4P',
-        ClientId: '47ko5gjvt7h5l64c6ej3a22shj',
-    };
-
-    const userPool = new CognitoUserPool(poolData);
-
+    import { generateClient } from 'aws-amplify/api';
+    import { listDemoTables } from '../../graphql/queries'; 
+    import {createDemoTable} from '../../graphql/mutations';
+ 
     const DbTable = () => {
+
         const [searchParams, setSearchParams] = useState({
             postcode: '',
             numberPlate:'',
@@ -27,8 +24,6 @@
         const [records, setRecords] = useState([]);
         const [filteredRecords, setFilteredRecords] = useState([]); 
         const [loading, setLoading] = useState(true);
-        const [username, setUsername] = useState('');
-        const [password, setPassword] = useState('');
         const [boundingCoords, setBoundingCoords] = useState({
             latitude_min: null,
             latitude_max: null,
@@ -48,75 +43,22 @@
             }
         }, [mapCoordinates]); 
 
-        
-
         useEffect(() => {
-            const savedUsername = localStorage.getItem('username');
-            const savedPassword = localStorage.getItem('password');
-            if (savedUsername && savedPassword) {
-                setUsername(savedUsername);
-                setPassword(savedPassword);
-                signIn(savedUsername, savedPassword);
-            }
-        }, []);
-
-        const signIn = async (user, pass) => {
-            const authenticationData = {
-                Username: user,
-                Password: pass || password,
-            };
-
-            const authenticationDetails = new AuthenticationDetails(authenticationData);
-            const userData = {
-                Username: user,
-                Pool: userPool,
-            };
-            const cognitoUser = new CognitoUser(userData);
-
-            cognitoUser.authenticateUser(authenticationDetails, {
-                onSuccess: async (result) => {
-                    const idToken = result.getIdToken().getJwtToken();
-                    AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-                        IdentityPoolId: 'eu-west-2:eb767e70-8369-4099-9596-58f5d78cd65c',
-                        Logins: {
-                            [`cognito-idp.eu-west-2.amazonaws.com/${poolData.UserPoolId}`]: idToken,
-                        },
-                    });
-
-                    AWS.config.credentials.get((err) => {
-                        if (err) console.error('Error getting AWS credentials:', err);
-                    });
-
-                    fetchRecordsFromDynamoDB();
-                },
-                onFailure: (err) => {
-                    alert(err.message || JSON.stringify(err));
-                },
-            });
-        };
-
-        useEffect(() => {
-            const fetchAllRecords = async () => {
-                const dynamoDB = new AWS.DynamoDB.DocumentClient();
-                const params = {
-                    TableName: 'demo-table',
-                };
-    
+            const fetchRecords = async () => {
                 try {
-                    const result = await dynamoDB.scan(params).promise();
-                    console.log('Fetched Records:', result.Items);
-                    setRecords(result.Items || []);
-                    // setFilteredRecords(result.Items || []); 
-                    localStorage.setItem('allRecords', JSON.stringify(result.Items || []));
-                } catch (error) {
-                    console.error('Error fetching records from DynamoDB:', error);
-                    alert(`Error fetching records: ${error.message}`);
+                    const client = await generateClient();
+                    const { data } = await client.graphql({ query: listDemoTables });
+                    console.log('Fetched Data:', data);
+                    setRecords(data.listDemoTables.items || []);
+                } catch (errors) {
+                    console.error('Error fetching data from AppSync:', errors);
+                    alert(`Error fetching records: ${errors.message}`);
                 } finally {
                     setLoading(false);
                 }
             };
     
-            fetchAllRecords();
+            fetchRecords();
         }, []); 
 
         useEffect(() => {
@@ -134,10 +76,6 @@
                 longMax: parseFloat((long + longRadius).toFixed(6)),
             };        
         };
-
-        const fetchRecordsFromDynamoDB = useCallback(async () => {     
-            
-        }, []);
 
         const handleSearch = (e) => {
             console.log('seatch pressed')

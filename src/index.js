@@ -18,7 +18,16 @@ Amplify.configure({
     mfaConfiguration: 'ON', 
     mfaTypes: ['EMAIL'],
     authenticationFlowType: 'USER_SRP_AUTH',
+},
+API: {
+  GraphQL: {
+    endpoint: 'https://6da6r6k6ovdenjnpuwa25pw5ue.appsync-api.eu-west-2.amazonaws.com/graphql',
+    region: 'eu-west-2',
+    defaultAuthMode: 'apiKey',
+    apiKey: 'da2-vlm6nevfcbdtpmv4moycsepx24'
+  }
 }
+
 
 });
 

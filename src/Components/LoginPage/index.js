@@ -48,11 +48,11 @@
           );
         },
       },
-      ConfirmSignIn: {
-        Header() {
-            return <Text>Please enter the code sent to your email</Text>;
-        }
-    }
+    //   ConfirmSignIn: {
+    //     Header() {
+    //         return <Text>Please enter the code sent to your email</Text>;
+    //     }
+    // }
   };
     
     
